@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="500dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="1dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/logo123" />
+
+    <EditText
+        android:id="@+id/emailOrNumberEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/logoImageView"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:hint="Username"
+        android:inputType="textEmailAddress"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:alpha="0.5"
+        android:background="@drawable/edittext_stroke" />
+
+    <EditText
+        android:id="@+id/passwordEditText"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/emailOrNumberEditText"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:gravity="center"
+        android:alpha="0.5"
+        android:background="@drawable/edittext_stroke"
+        />
+
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordEditText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="Log in"
+        android:background="@drawable/button_background" />
+
+    <TextView
+        android:id="@+id/forgotPasswordTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordEditText"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:text="Forgot Password? Click here"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:alpha="0.5"
+        android:textColor="#FFFFFF" />
+
+
+    <Button
+        android:id="@+id/createAccountButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loginButton"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/button_transparentbackground"
+        android:gravity="center"
+        android:text="Create Account" />
+
+
+
+</RelativeLayout>

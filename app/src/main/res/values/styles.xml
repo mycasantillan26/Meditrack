@@ -1,0 +1,7 @@
+<resources>
+    <style name="WhiteEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="backgroundTint">@android:color/white</item>
+    </style>
+</resources>

@@ -1,0 +1,98 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_white_background"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
+
+
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/profile123"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:contentDescription="Profile"
+        android:onClick="onProfileButtonClick" />
+
+    <LinearLayout
+        android:id="@+id/navigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#D9D9D9"
+        android:padding="8dp"
+        android:alpha="0.3">
+
+
+        <ImageButton
+            android:id="@+id/todayIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Today Icon"
+            android:onClick="onTodayIconClick"
+            android:scaleType="fitCenter"
+            android:src="@drawable/home123"
+            android:layout_gravity="center"/>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <!-- White background for calendarIcon -->
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/circle_white_background"
+                android:contentDescription="Background"
+                android:layout_gravity="center"/>
+
+            <!-- calendarIcon ImageButton -->
+            <ImageButton
+                android:id="@+id/calendarIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/calendar123"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:onClick="onCalendarIconClick"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/imgIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/img"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onImgIconClick"
+            android:contentDescription="Image Icon" />
+
+        <ImageButton
+            android:id="@+id/trackerIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/tracker"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onSettingsIconClick"
+            android:contentDescription="Tracker Icon" />
+    </LinearLayout>
+
+</RelativeLayout>
