@@ -39,7 +39,6 @@ public class GetStarted extends AppCompatActivity {
 
         EditText passwordEditText = findViewById(R.id.passwordEditText);
 
-        // Find the "Create Account" button and set OnClickListener
         Button createAccountButton = findViewById(R.id.createAccountButton);
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
