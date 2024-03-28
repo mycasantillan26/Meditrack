@@ -33,11 +33,10 @@ public class GetStarted extends AppCompatActivity {
         // Initialize Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
 
-        // Find the email or number EditText and set its text color to white
         EditText emailOrNumberEditText = findViewById(R.id.emailOrNumberEditText);
         emailOrNumberEditText.setTextColor(Color.WHITE);
 
-        // Find the password EditText
+
         EditText passwordEditText = findViewById(R.id.passwordEditText);
 
         // Find the "Create Account" button and set OnClickListener
