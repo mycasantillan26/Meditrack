@@ -1,7 +1,20 @@
 <resources>
+    <!-- Style for EditText with white text color and background tint -->
     <style name="WhiteEditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textColorHint">@android:color/white</item>
         <item name="backgroundTint">@android:color/white</item>
+    </style>
+
+
+    <style name="SelectedDateStyle">
+        <item name="android:background">#FF0000</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="BlackEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">#000000</item> <!-- Black text color -->
+        <item name="android:textColorHint">#000000</item> <!-- Black hint text color -->
+        <item name="backgroundTint">#FFFFFF</item> <!-- Background color (you can adjust this as needed) -->
     </style>
 </resources>

@@ -27,7 +27,7 @@
 
         <activity android:name=".Register"/>
         <activity android:name=".Today"/>
-        <activity android:name=".Calendar"/>
+        <activity android:name=".CalendarActivity"/>
         <activity android:name=".Plans"/>
         <activity android:name=".Profile"/>
         <activity android:name=".TrackSymptoms"/>

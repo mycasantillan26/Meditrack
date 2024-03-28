@@ -26,10 +26,12 @@ public class Today extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Profile activity when the profile button is clicked
-                Intent intent = new Intent(Today.this, Profile.class); // Replace Profile.class with your actual Profile activity class
+                Intent intent = new Intent(Today.this, Profile.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left); // Add animation
             }
         });
+
 
         ImageButton todayIcon = findViewById(R.id.todayIcon);
 
@@ -53,7 +55,7 @@ public class Today extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(Today.this, Calendar.class);
+                Intent intent = new Intent(Today.this, CalendarActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }

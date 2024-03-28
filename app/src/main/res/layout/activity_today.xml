@@ -5,24 +5,67 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/circle_white_background"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true" />
+    <!-- ScrollView for Analog Clock, + Button, and Profile Button -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/calendarText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:text="Today"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF" />
+
+            <!-- Analog Clock -->
+            <AnalogClock
+                android:id="@+id/analogClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+
+                android:format12Hour="hh:mm:ss a"
+                android:layout_marginTop="30dp" />
+
+            <!-- "+" Button -->
+            <Button
+                android:id="@+id/plusButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:onClick="onPlusButtonClick"
+                android:text="+"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:layout_marginTop="30dp" />
 
 
-    <ImageButton
-        android:id="@+id/profileButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/profile123"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:contentDescription="Profile"
-        android:onClick="onProfileButtonClick" />
+            <!-- Profile Button -->
+            <ImageButton
+                android:id="@+id/profileButton"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/profile123"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="20dp"
+                android:contentDescription="Profile"
+                android:onClick="onProfileButtonClick" />
+
+        </RelativeLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/navigationBar"

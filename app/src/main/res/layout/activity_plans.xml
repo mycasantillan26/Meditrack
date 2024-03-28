@@ -4,13 +4,46 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <ImageView
+
+    <TextView
+        android:id="@+id/calendarText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/circle_white_background"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Plans"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF" />
 
+    <ImageView
+        android:id="@+id/imgIcon2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/img"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp" />
+
+    <TextView
+        android:id="@+id/noPlansText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You still don't have any plans"
+        android:layout_below="@id/imgIcon2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/addPlanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add New Plan"
+        android:layout_below="@id/noPlansText"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textColor="@android:color/white"
+        android:background="@color/skyblue" />
 
     <ImageButton
         android:id="@+id/profileButton"

@@ -25,11 +25,11 @@ public class TrackSymptoms extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Profile activity when the profile button is clicked
-                Intent intent = new Intent(TrackSymptoms.this, Profile.class); // Replace Profile.class with your actual Profile activity class
+                Intent intent = new Intent(TrackSymptoms.this, Profile.class);
                 startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left); // Add animation
             }
         });
-
         ImageButton todayIcon = findViewById(R.id.todayIcon);
 
         // Set OnClickListener for the calendar icon
@@ -52,7 +52,7 @@ public class TrackSymptoms extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(TrackSymptoms.this, Calendar.class);
+                Intent intent = new Intent(TrackSymptoms.this, CalendarActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
             }
