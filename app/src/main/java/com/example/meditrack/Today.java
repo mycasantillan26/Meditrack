@@ -7,6 +7,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.ImageButton;
+import android.widget.Button;
+import android.content.Intent;
+import android.view.View;
 
 public class Today extends AppCompatActivity {
 
@@ -86,5 +89,18 @@ public class Today extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
+        Button plusButton = findViewById(R.id.plusButton);
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start the AddNewPlan activity when the plusButton is clicked
+                Intent intent = new Intent(Today.this, AddNewPlan.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 }

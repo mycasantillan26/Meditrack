@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.widget.Button;
 import android.widget.ImageButton;
 
 public class Plans extends AppCompatActivity {
@@ -82,6 +84,16 @@ public class Plans extends AppCompatActivity {
                 // Start the Calendar activity when the calendar icon is clicked
                 Intent intent = new Intent(Plans.this, TrackSymptoms.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
+
+        Button plusButton = findViewById(R.id.plusButton);
+        plusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Start the AddNewPlan activity when the plusButton is clicked
+                Intent intent = new Intent(Plans.this, AddNewPlan.class);
                 startActivity(intent);
             }
         });
