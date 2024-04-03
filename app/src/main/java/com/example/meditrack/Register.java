@@ -1,6 +1,7 @@
 package com.example.meditrack;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,8 +16,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -30,6 +34,8 @@ public class Register extends AppCompatActivity {
     Button createAccountButton;
 
     DatabaseReference databaseReference;
+    FirebaseAuth mAuth;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +46,16 @@ public class Register extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        setContentView(R.layout.activity_register); // Moved setContentView() here after requestFeature()
+        setContentView(R.layout.activity_register);
 
-        // Initialize Firebase Database
+        // Initialize Firebase Database and Authentication
         databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        mAuth = FirebaseAuth.getInstance();
+
+        // Initialize ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Sending OTP...");
+        progressDialog.setCancelable(false);
 
         // Initialize EditText fields
         birthDateEditText = findViewById(R.id.birthDateEditText);
@@ -135,32 +147,33 @@ public class Register extends AppCompatActivity {
 
     private void saveUserData(String firstName, String lastName, String email, String number, String birthDate,
                               String username, String password, String confirmPassword) {
-        // Generate a unique key for the user
+        // Show progress dialog
+        progressDialog.setMessage("Creating Account...");
+        progressDialog.show();
+
+        // Save user data to Firebase Realtime Database
         String userId = databaseReference.push().getKey();
-
-        // Create a User object
         User user = new User(userId, firstName, lastName, email, number, birthDate, username, password, confirmPassword);
-
-        // Save the user to Firebase
         databaseReference.child(userId).setValue(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        // Display a success message
-                        Toast.makeText(Register.this, "You successfully created an account", Toast.LENGTH_SHORT).show();
-
-                        // Optionally, you can navigate to another activity after successful account creation
-                        Intent intent = new Intent(Register.this, GetStarted.class);
-                        startActivity(intent);
-                        finish(); // Finish the current activity to prevent going back to it
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Display a failure message
-                        Toast.makeText(Register.this, "Failed creating account", Toast.LENGTH_SHORT).show();
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Registration successful, send OTP
+                            sendOTP(number);
+                        } else {
+                            // Registration failed, show error message
+                            progressDialog.dismiss();
+                            Toast.makeText(Register.this, "Failed to create account", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
+    }
+
+    private void sendOTP(String phoneNumber) {
+        progressDialog.setMessage("Sending OTP...");
+        // Implement sending OTP logic using Firebase Authentication's PhoneAuthProvider here
+        // See the previous implementation of sendOTP method for reference
+        // ...
     }
 }

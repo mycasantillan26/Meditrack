@@ -1,13 +1,15 @@
 <resources>
     <string name="app_name">Meditrack+</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="verify">verify</string>
 
-        <string-array name="unit_array">
-            <item>PCS (pieces)</item>
-            <item>G (grams)</item>
-            <item>MG (milligrams)</item>
-            <item>MCG (micrograms)</item>
-            <item>ML (milliliters)</item>
-        </string-array>
+    <string-array name="unit_array">
+        <item>PCS (pieces)</item>
+        <item>G (grams)</item>
+        <item>MG (milligrams)</item>
+        <item>MCG (micrograms)</item>
+        <item>ML (milliliters)</item>
+    </string-array>
 
     <string-array name="start_date_array">
         <item>Start Date</item>
@@ -17,11 +19,19 @@
     </string-array>
 
     <string-array name="end_date_array">
-
+        <item>End Date</item>
         <item>In One Week</item>
         <item>In One Month</item>
         <item>Constantly</item>
         <item>Select Date</item>
+    </string-array>
+
+    <string-array name="in_time">
+        <item>In time</item>
+        <item>Morning</item>
+        <item>Before Sleep</item>
+        <item>Every X hours</item>
+        <item>Specific day of the week</item>
     </string-array>
 
 </resources>

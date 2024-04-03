@@ -11,28 +11,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Meditrack"
         tools:targetApi="31">
-
+        <activity
+            android:name=".VerificationOTP"
+            android:exported="false" />
         <!-- Landingpage Activity -->
         <activity
             android:name=".Landingpage"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- GetStarted Activity -->
+        </activity> <!-- GetStarted Activity -->
         <activity android:name=".GetStarted" />
-
-        <activity android:name=".Register"/>
-        <activity android:name=".Today"/>
-        <activity android:name=".CalendarActivity"/>
-        <activity android:name=".Plans"/>
-        <activity android:name=".Profile"/>
-        <activity android:name=".TrackSymptoms"/>
-        <activity android:name=".AddNewPlan"/>
-        <activity android:name=".Pharmacist"/>
+        <activity android:name=".Register" />
+        <activity android:name=".Today" />
+        <activity android:name=".CalendarActivity" />
+        <activity android:name=".Plans" />
+        <activity android:name=".Profile" />
+        <activity android:name=".TrackSymptoms" />
+        <activity android:name=".AddNewPlan" />
+        <activity android:name=".Pharmacist" />
     </application>
 
 </manifest>
