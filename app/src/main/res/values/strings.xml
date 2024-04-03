@@ -17,11 +17,19 @@
     </string-array>
 
     <string-array name="end_date_array">
-
+        <item>End Date</item>
         <item>In One Week</item>
         <item>In One Month</item>
         <item>Constantly</item>
         <item>Select Date</item>
+    </string-array>
+
+    <string-array name="in_time">
+        <item>In time</item>
+        <item>Morning</item>
+        <item>Before Sleep</item>
+        <item>Every X hours</item>
+        <item>Specific day of the week</item>
     </string-array>
 
 </resources>

@@ -15,7 +15,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="30dp"
                     android:text="Create New Plan"
-                    android:textSize="20sp"
+                    android:textSize="25sp"
                     android:textStyle="bold"
                     android:textColor="#FFFFFF" />
 
@@ -104,6 +104,31 @@
                     android:hint="End Date"
                     android:entries="@array/end_date_array"
                     android:background="@drawable/edittext_background" />
+
+
+                <TextView
+                    android:id="@+id/intakeMethod"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/endDateSpinner"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="60dp"
+                    android:text="Intake Method:"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF" />
+
+                <Spinner
+                    android:id="@+id/inTimeSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/intakeMethod"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@id/startDateSpinner"
+                    android:hint="In time"
+                    android:entries="@array/in_time"
+                    android:background="@drawable/edittext_background" />
+
 
 
             </RelativeLayout>
