@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
+
     <TextView
         android:id="@+id/calendarText"
         android:layout_width="wrap_content"
@@ -25,6 +26,37 @@
         android:layout_marginEnd="20dp"
         android:contentDescription="Profile"
         android:onClick="onProfileButtonClick" />
+
+
+    <TextView
+        android:id="@+id/dateText"
+        android:layout_width="278dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="543dp"
+        android:text="Date Today: March 04, 2024"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/myDropdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="158dp"
+        android:layout_marginEnd="135dp"
+        android:layout_marginBottom="489dp"
+        android:background="#E0F7FA"></Spinner>
+
+
 
     <LinearLayout
         android:id="@+id/navigationBar"
@@ -72,6 +104,8 @@
             android:contentDescription="Image Icon" />
 
 
+
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -99,4 +133,38 @@
         </FrameLayout>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/savebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="170dp"
+        android:layout_marginEnd="147dp"
+        android:layout_marginBottom="376dp"
+        android:backgroundTint="#2196F3"
+        android:text="SAVE" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="360dp"
+        android:layout_height="189dp"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="21dp"
+        android:layout_marginBottom="155dp"
+        android:background="#E0F7FA"
+        android:text="Selected symptoms will appear here..." />
+
+
 </RelativeLayout>
+
+
+<!--test>
