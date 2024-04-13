@@ -27,18 +27,17 @@ public class GetStarted extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_getstarted);
 
-        // Hide the title bar and set the activity to fullscreen
+        // Hide the title bar
         getSupportActionBar().hide();
 
         // Initialize Firebase Authentication
         mAuth = FirebaseAuth.getInstance();
 
+        // Find views
         EditText emailOrNumberEditText = findViewById(R.id.emailOrNumberEditText);
-        emailOrNumberEditText.setTextColor(Color.WHITE);
-
-
         EditText passwordEditText = findViewById(R.id.passwordEditText);
 
+        // Set OnClickListener for the "Create Account" button
         Button createAccountButton = findViewById(R.id.createAccountButton);
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +48,7 @@ public class GetStarted extends AppCompatActivity {
             }
         });
 
-        // Find the "Login" button and set OnClickListener
+        // Set OnClickListener for the "Login" button
         Button loginButton = findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,26 +57,12 @@ public class GetStarted extends AppCompatActivity {
                 String enteredUsername = emailOrNumberEditText.getText().toString().trim();
                 String enteredPassword = passwordEditText.getText().toString().trim();
 
-                // Check if the entered username and password are equal and recorded in Firebase
-                if (enteredUsername.equals(enteredPassword)) {
-                    // Open Today activity
-                    Intent intent = new Intent(GetStarted.this, Today.class);
-                    startActivity(intent);
-                } else if (enteredUsername.equals("Pharmacist@pharmacist.com") && enteredPassword.equals("pharmacist")) {
-                    // Open Pharmacist activity
-                    Intent intent = new Intent(GetStarted.this, Pharmacist.class);
-                    startActivity(intent);
-                } else {
-                    // Display "Wrong Password or Username" message
-                    Toast.makeText(GetStarted.this, "Wrong Password or Username", Toast.LENGTH_SHORT).show();
-                }
+                // Check if the entered username and password are valid
+                signInUser(enteredUsername, enteredPassword);
             }
         });
 
-
-
-
-        // Find the TextView for "Forgot Password? Click here"
+        // Set OnClickListener for the "Forgot Password" TextView
         TextView forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView);
         forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,5 +71,25 @@ public class GetStarted extends AppCompatActivity {
                 // For example, open a new activity to reset password
             }
         });
+    }
+
+    // Method to sign in the user
+    private void signInUser(String username, String password) {
+        mAuth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, navigate to VerificationOTP activity
+                            Intent intent = new Intent(GetStarted.this, VerificationOTP.class);
+                            startActivity(intent);
+                            finish(); // Finish the current activity to prevent going back to it
+                        } else {
+                            // Sign in failed, display an error message
+                            Toast.makeText(GetStarted.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/gradient_background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".VerificationOTP">
+
+        <!-- Logo Image -->
+
+        <!-- OTP EditText -->
+
+        <ImageView
+            android:id="@+id/logoImageView"
+            android:layout_width="500dp"
+            android:layout_height="250dp"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/todo"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logo123"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Verify Button -->
+
+        <!-- Error TextView -->
+
+        <EditText
+            android:id="@+id/editTextOTP"
+            android:layout_width="367dp"
+            android:layout_height="52dp"
+            android:layout_below="@id/logoImageView"
+            android:layout_marginTop="8dp"
+            android:alpha="0.5"
+            android:background="@drawable/edittext_stroke"
+            android:gravity="center"
+            android:hint="@string/enter_otp"
+            android:inputType="number"
+            android:maxLength="6"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="#FFFFFF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logoImageView" />
+
+        <Button
+            android:id="@+id/buttonVerify"
+            android:layout_width="146dp"
+            android:layout_height="41dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_background"
+            android:text="@string/verify"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/editTextOTP" />
+
+        <TextView
+            android:id="@+id/textViewError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/purple_700"
+            android:textSize="20sp"
+            app:layout_constraintTop_toBottomOf="@id/buttonVerify"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="gone" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
