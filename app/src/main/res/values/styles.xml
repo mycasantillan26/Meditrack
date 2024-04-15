@@ -17,4 +17,14 @@
         <item name="android:textColorHint">#000000</item> <!-- Black hint text color -->
         <item name="backgroundTint">#FFFFFF</item> <!-- Background color (you can adjust this as needed) -->
     </style>
+
+
+    <style name="CalendarViewStyle" parent="@android:style/Widget.CalendarView">
+        <item name="android:dateTextAppearance">@style/BlackDateTextAppearance</item>
+    </style>
+
+    <style name="BlackDateTextAppearance">
+        <item name="android:textColor">#000000</item> <!-- Black color -->
+    </style>
+
 </resources>

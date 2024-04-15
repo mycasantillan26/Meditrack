@@ -17,8 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
 
@@ -29,7 +30,7 @@ public class Register extends AppCompatActivity {
     EditText usernameEditText, passwordEditText, confirmPasswordEditText;
     Button createAccountButton;
 
-    DatabaseReference databaseReference;
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +43,8 @@ public class Register extends AppCompatActivity {
 
         setContentView(R.layout.activity_register); // Moved setContentView() here after requestFeature()
 
-        // Initialize Firebase Database
-        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+        // Initialize Firebase Authentication
+        mAuth = FirebaseAuth.getInstance();
 
         // Initialize EditText fields
         birthDateEditText = findViewById(R.id.birthDateEditText);
@@ -86,8 +87,8 @@ public class Register extends AppCompatActivity {
                     return; // Exit the method
                 }
 
-                // Save data to Firebase
-                saveUserData(firstName, lastName, email, number, birthDate, username, password, confirmPassword);
+                // Create user account using Firebase Authentication
+                registerUser(email, password);
             }
         });
 
@@ -133,33 +134,22 @@ public class Register extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    private void saveUserData(String firstName, String lastName, String email, String number, String birthDate,
-                              String username, String password, String confirmPassword) {
-        // Generate a unique key for the user
-        String userId = databaseReference.push().getKey();
-
-        // Create a User object
-        User user = new User(userId, firstName, lastName, email, number, birthDate, username, password, confirmPassword);
-
-        // Save the user to Firebase
-        databaseReference.child(userId).setValue(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void registerUser(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
-                    public void onSuccess(Void aVoid) {
-                        // Display a success message
-                        Toast.makeText(Register.this, "You successfully created an account", Toast.LENGTH_SHORT).show();
-
-                        // Optionally, you can navigate to another activity after successful account creation
+                    public void onSuccess(AuthResult authResult) {
+                        // Registration success, navigate to another activity
                         Intent intent = new Intent(Register.this, GetStarted.class);
                         startActivity(intent);
-                        finish(); // Finish the current activity to prevent going back to it
+                        finish(); // Finish the current activity
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // Display a failure message
-                        Toast.makeText(Register.this, "Failed creating account", Toast.LENGTH_SHORT).show();
+                        // Registration failed, display an error message
+                        Toast.makeText(Register.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

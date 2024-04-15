@@ -1,16 +1,18 @@
 package com.example.meditrack;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,71 +22,84 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class GetStarted extends AppCompatActivity {
 
+    private EditText editTextUsername, editTextPassword;
+    private Button buttonLogin;
+    private TextView textViewError, createAccount;
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_getstarted);
-
-        // Hide the title bar and set the activity to fullscreen
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        // Initialize Firebase Authentication
+        setContentView(R.layout.activity_getstarted);
+
+        editTextUsername = findViewById(R.id.editTextUsername);
+        editTextPassword = findViewById(R.id.editTextPassword);
+        buttonLogin = findViewById(R.id.buttonLogin);
+        textViewError = findViewById(R.id.textViewError);
+        createAccount = findViewById(R.id.CreateAccount);
+
         mAuth = FirebaseAuth.getInstance();
 
-        EditText emailOrNumberEditText = findViewById(R.id.emailOrNumberEditText);
-        emailOrNumberEditText.setTextColor(Color.WHITE);
-
-
-        EditText passwordEditText = findViewById(R.id.passwordEditText);
-
-        Button createAccountButton = findViewById(R.id.createAccountButton);
-        createAccountButton.setOnClickListener(new View.OnClickListener() {
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Start the Register activity when the button is clicked
-                Intent intent = new Intent(GetStarted.this, Register.class);
-                startActivity(intent);
+                loginUser();
             }
         });
 
-        // Find the "Login" button and set OnClickListener
-        Button loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get the entered username and password
-                String enteredUsername = emailOrNumberEditText.getText().toString().trim();
-                String enteredPassword = passwordEditText.getText().toString().trim();
-
-                // Check if the entered username and password are equal and recorded in Firebase
-                if (enteredUsername.equals(enteredPassword)) {
-                    // Open Today activity
-                    Intent intent = new Intent(GetStarted.this, Today.class);
-                    startActivity(intent);
-                } else if (enteredUsername.equals("Pharmacist@pharmacist.com") && enteredPassword.equals("pharmacist")) {
-                    // Open Pharmacist activity
-                    Intent intent = new Intent(GetStarted.this, Pharmacist.class);
-                    startActivity(intent);
-                } else {
-                    // Display "Wrong Password or Username" message
-                    Toast.makeText(GetStarted.this, "Wrong Password or Username", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-
-
-        // Find the TextView for "Forgot Password? Click here"
-        TextView forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView);
-        forgotPasswordTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Handle forgot password functionality here
-                // For example, open a new activity to reset password
+                // Open the Register activity
+                startActivity(new Intent(GetStarted.this, Register.class));
             }
         });
     }
+
+    private void loginUser() {
+        String username = editTextUsername.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+
+        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+            textViewError.setText("Empty username or password");
+            textViewError.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (username.equals("pharmacist@pharmacist.com") && password.equals("pharmacist")) {
+            // Redirect to Pharmacist activity
+            Intent intent = new Intent(GetStarted.this, Pharmacist.class);
+            startActivity(intent);
+            finish();
+            return; // Exit the method
+        }
+
+        mAuth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // User successfully logged in
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                // Redirect to Today activity
+                                Intent intent = new Intent(GetStarted.this, Today.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        } else {
+                            // Login failed, display error message
+                            String errorMessage = task.getException().getMessage();
+                            Log.e("LoginActivity", "signInWithEmailAndPassword:failure", task.getException());
+                            textViewError.setText(errorMessage);
+                            textViewError.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+    }
+
 }

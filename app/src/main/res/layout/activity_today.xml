@@ -37,6 +37,16 @@
                 android:format12Hour="hh:mm:ss a"
                 android:layout_marginTop="30dp" />
 
+            <TextView
+                android:id="@+id/plansTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/analogClock"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="20dp"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp" />
+
             <!-- "+" Button -->
             <Button
                 android:id="@+id/plusButton"

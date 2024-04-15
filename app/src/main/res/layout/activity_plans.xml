@@ -26,6 +26,94 @@
         android:layout_marginTop="100dp" />
 
     <TextView
+        android:id="@+id/plansTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarText"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
+        android:text="Active"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <RelativeLayout
+        android:id="@+id/plansLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/plansTextView"
+        android:background="#33FFFFFF">
+
+        <!-- TextView for Name -->
+
+        <!-- TextView for Dosage -->
+
+        <!-- TextView for Unit -->
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:text="Name"
+            android:textColor="#FFFFFF"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/dosageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+         android:layout_marginStart="80dp"
+            android:layout_marginTop="4dp"
+            android:text="Dosage"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/unitTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="(Unit)"
+            android:layout_marginStart="150dp"
+            android:layout_marginTop="4dp"
+            android:textSize="20sp" />
+
+        <!-- TextView for Intake Method -->
+        <TextView
+            android:id="@+id/intakeMethodTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="Intake Method"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/unitTextView" />
+
+        <!-- TextView for Time -->
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="Time"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="100dp"
+            android:layout_below="@id/unitTextView" />
+
+        <!-- TextView for Days -->
+        <TextView
+            android:id="@+id/daysTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="Days"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="150dp"
+            android:layout_below="@id/unitTextView" />
+
+    </RelativeLayout>
+
+
+    <TextView
         android:id="@+id/noPlansText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
