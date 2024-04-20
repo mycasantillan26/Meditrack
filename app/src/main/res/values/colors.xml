@@ -11,4 +11,5 @@
         <color name="clicked_button_color">#00008B</color> <!-- Dark blue color -->
 
 
+    <string name="todo" />
 </resources>

@@ -83,5 +83,6 @@ public class TrackSymptoms extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 }

@@ -4,6 +4,18 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
+
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/profile123"
+        android:contentDescription="Profile"
+        android:onClick="onProfileButtonClick" />
+
     <TextView
         android:id="@+id/calendarText"
         android:layout_width="wrap_content"
@@ -11,20 +23,81 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:text="Symptoms Tracker"
+        android:textColor="#FFFFFF"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+        android:textStyle="bold" />
 
-    <ImageButton
-        android:id="@+id/profileButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/profile123"
+    <TextView
+        android:id="@+id/dateText"
+        android:layout_width="278dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:contentDescription="Profile"
-        android:onClick="onProfileButtonClick" />
+        android:layout_marginStart="77dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="543dp"
+        android:text="Date Today: March 04, 2024"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="90dp"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="70dp"
+        android:layout_marginEnd="56dp"
+        android:layout_marginBottom="426dp"
+        android:orientation="vertical">
+
+
+        <Spinner
+            android:id="@+id/dropdown_button"
+            android:layout_width="107dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center"
+            />
+<!--            android:entries="@array/checklist_items"-->
+
+
+        <TextView
+            android:id="@+id/selected_items_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Selected Items:" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/savebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="169dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="335dp"
+        android:backgroundTint="#2196F3"
+        android:text="SAVE" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="310dp"
+        android:layout_height="152dp"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="86dp"
+        android:background="#E0F7FA"
+        android:text="Selected symptoms will appear here..." />
 
     <LinearLayout
         android:id="@+id/navigationBar"
@@ -72,6 +145,8 @@
             android:contentDescription="Image Icon" />
 
 
+
+
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -99,4 +174,13 @@
         </FrameLayout>
     </LinearLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
 </RelativeLayout>
+
+

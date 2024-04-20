@@ -45,11 +45,7 @@
         android:layout_below="@id/plansTextView"
         android:background="#33FFFFFF">
 
-        <!-- TextView for Name -->
 
-        <!-- TextView for Dosage -->
-
-        <!-- TextView for Unit -->
         <TextView
             android:id="@+id/nameTextView"
             android:layout_width="100dp"

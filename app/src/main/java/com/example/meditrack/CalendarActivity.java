@@ -5,13 +5,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class CalendarActivity extends AppCompatActivity {
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +31,11 @@ public class CalendarActivity extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_calendar);
+
+        // Find the calendarView
+        CalendarView calendarView = findViewById(R.id.calendarView);
+
+
 
         // Find the profile button ImageButton
         ImageButton profileButton = findViewById(R.id.profileButton);
@@ -91,8 +107,7 @@ public class CalendarActivity extends AppCompatActivity {
             }
         });
 
-        // Get CalendarView reference
-        CalendarView calendarView = findViewById(R.id.calendarView);
+      
 
         // Highlight today's date initially
         highlightSelectedDate(calendarView, Calendar.getInstance().get(Calendar.YEAR),

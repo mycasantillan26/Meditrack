@@ -62,7 +62,7 @@
         private EditText timeEditText;
         private Button addTimeButton;
         private int counter = 1;
-        private RelativeLayout parentLayout; // Declare parentLayout here
+        private RelativeLayout parentLayout;
         private boolean isAdditionalLayoutVisible = false;
         private int hourNumber = 1;
 
@@ -98,6 +98,7 @@
         }
 
         // Declare selectedDays as a class-level variable
+
         private List<String> selectedDays = new ArrayList<>();
 
         // Update the recordDay method
@@ -134,9 +135,6 @@
             nameEditText = findViewById(R.id.nameEditText);
 
 
-
-
-            // Disable views initially
             counterTextView.setEnabled(false);
             timeEditText.setEnabled(false);
             addTimeButton.setEnabled(false);
@@ -150,7 +148,6 @@
 
 
 
-            // Set up TextWatcher for nameEditText
             nameEditText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
