@@ -98,7 +98,7 @@
             android:background="@drawable/edittext_background" />
 
 
-        <Spinner
+        <EditText
             android:id="@+id/startDateSpinner"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
@@ -112,7 +112,7 @@
             android:background="@drawable/edittext_background" />
 
 
-        <Spinner
+        <EditText
             android:id="@+id/endDateSpinner"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
@@ -390,7 +390,7 @@
 
         <!-- Add Reminder button -->
         <Button
-            android:id="@+id/addReminderButton"
+            android:id="@+id/updateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/commentEditText"
@@ -398,7 +398,7 @@
             android:layout_marginStart="30dp"
             android:layout_marginEnd="30dp"
             android:layout_marginBottom="0dp"
-            android:text="Add Reminder"
+            android:text="Update Reminder"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:background="@drawable/button_background" />

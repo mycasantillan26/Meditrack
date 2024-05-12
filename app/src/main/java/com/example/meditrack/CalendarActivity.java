@@ -1,137 +1,116 @@
 package com.example.meditrack;
-
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 public class CalendarActivity extends AppCompatActivity {
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CalendarView calendarView;
+    private TextView monthYearText;
+    private LinearLayout planContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_calendar);
 
-        // Find the calendarView
-        CalendarView calendarView = findViewById(R.id.calendarView);
+        calendarView = findViewById(R.id.calendarView);
+        monthYearText = findViewById(R.id.monthYearText);
+        planContainer = findViewById(R.id.planContainer);
 
+        // Update the month and year text when the activity is created
+        updateMonthYearText(Calendar.getInstance().getTime());
 
+        // Fetch plans for the current month initially
+        fetchPlansForMonth(Calendar.getInstance().getTime());
 
-        // Find the profile button ImageButton
-        ImageButton profileButton = findViewById(R.id.profileButton);
-
-        // Set OnClickListener for the profile button
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Profile activity when the profile button is clicked
-                Intent intent = new Intent(CalendarActivity.this, Profile.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left); // Add animation
-            }
+        // Handle changes in the selected date on the calendar
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.set(year, month, dayOfMonth);
+            updateMonthYearText(selectedDate.getTime());
+            fetchPlansForMonth(selectedDate.getTime());
         });
-
-        // Find the today icon ImageButton
-        ImageButton todayIcon = findViewById(R.id.todayIcon);
-
-        // Set OnClickListener for the today icon
-        todayIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(CalendarActivity.this, Today.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
-        });
-
-        // Find the calendar icon ImageButton
-        ImageButton calendarIcon = findViewById(R.id.calendarIcon);
-
-        // Set OnClickListener for the calendar icon
-        calendarIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(CalendarActivity.this, CalendarActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
-        });
-
-        // Find the image icon ImageButton
-        ImageButton imgIcon = findViewById(R.id.imgIcon);
-
-        // Set OnClickListener for the image icon
-        imgIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(CalendarActivity.this, Plans.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
-        });
-
-        // Find the tracker icon ImageButton
-        ImageButton trackerIcon = findViewById(R.id.trackerIcon);
-
-        // Set OnClickListener for the tracker icon
-        trackerIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Calendar activity when the calendar icon is clicked
-                Intent intent = new Intent(CalendarActivity.this, TrackSymptoms.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
-        });
-
-      
-
-        // Highlight today's date initially
-        highlightSelectedDate(calendarView, Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
     }
 
-    // Method to highlight selected date
-    private void highlightSelectedDate(CalendarView calendarView, int year, int month, int dayOfMonth) {
-        // Set the style for the selected date
-        calendarView.setDateTextAppearance(R.style.SelectedDateStyle);
+    private void fetchPlansForMonth(Date date) {
+        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+        String monthYear = monthFormat.format(date);
 
-        // Set the selected date in the calendar
-        calendarView.setDate(getSelectedDateInMillis(year, month, dayOfMonth));
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            db.collection("plans")
+                    .whereEqualTo("userId", currentUser.getUid())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        planContainer.removeAllViews(); // Clear previous entries
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Map<String, Object> planData = document.getData();
+                                processPlanData(planData, monthYear, monthFormat);
+                            }
+                        } else {
+                            Toast.makeText(this, "Failed to fetch plans.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
+    private void processPlanData(Map<String, Object> planData, String targetMonthYear, SimpleDateFormat monthFormat) {
+        Timestamp startTimestamp = (Timestamp) planData.get("startDate");
+        Timestamp endTimestamp = (Timestamp) planData.get("endDate");
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startTimestamp.toDate());
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endTimestamp.toDate());
 
-    // Method to get selected date in milliseconds
-    private long getSelectedDateInMillis(int year, int month, int dayOfMonth) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, year);
-        calendar.set(Calendar.MONTH, month);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        return calendar.getTimeInMillis();
+        while (!startCal.after(endCal)) {
+            String currentMonthYear = monthFormat.format(startCal.getTime());
+            if (currentMonthYear.equals(targetMonthYear)) {
+                addPlanToView(planData, startCal.getTime());
+            }
+            startCal.add(Calendar.DATE, 1); // Increment the day
+        }
     }
 
+    private void addPlanToView(Map<String, Object> planData, Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM d", Locale.getDefault());
+        String displayText = planData.get("name") + " - " + dateFormat.format(date);
+        TextView planView = new TextView(this);
+        planView.setText(displayText);
+        planView.setTextSize(16f);
+        planView.setTextColor(Color.WHITE);
+        planContainer.addView(planView);
+    }
+
+    private void updateMonthYearText(Date date) {
+        SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        monthYearText.setText(monthYearFormat.format(date));
+    }
 }

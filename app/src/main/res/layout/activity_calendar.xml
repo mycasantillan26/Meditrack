@@ -4,36 +4,6 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="#4AFFFFFF"
-        app:cardCornerRadius="20dp"
-        android:layout_alignParentTop="true">
-
-        <CalendarView
-            android:id="@+id/calendarView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:dateTextAppearance="@style/CalendarViewStyle" />
-
-
-
-        <TextView
-            android:id="@+id/plansTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/calendarView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:textColor="#FFFFFF"
-            android:textSize="20sp" />
-
-    </androidx.cardview.widget.CardView>
-
     <TextView
         android:id="@+id/calendarText"
         android:layout_width="wrap_content"
@@ -44,6 +14,77 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF" />
+    <LinearLayout
+        android:id="@+id/customHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarText"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="30dp">
+
+        <TextView
+            android:id="@+id/monthYearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month Year"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarText"
+        android:layout_marginTop="50dp"
+        style="@style/CalendarViewCustom" />
+
+    <LinearLayout
+        android:id="@+id/dateMarkersLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/calendarView"
+        android:gravity="center_horizontal" />
+
+
+
+
+    <View
+        android:id="@+id/viewUp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/calendarText"
+        android:layout_marginTop="69dp"
+        android:background="@drawable/gradient_background" />
+
+    <View
+        android:id="@+id/viewDown"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/calendarView"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/gradient_background" />
+
+
+    <ScrollView
+        android:id="@+id/planDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_below="@id/viewDown"
+        android:layout_marginBottom="10dp"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/planContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 
     <ImageButton
@@ -67,7 +108,6 @@
         android:padding="8dp"
         android:alpha="0.3">
 
-
         <ImageButton
             android:id="@+id/todayIcon"
             android:layout_width="0dp"
@@ -85,8 +125,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center">
-
-            <!-- White background for calendarIcon -->
             <ImageView
                 android:layout_width="45dp"
                 android:layout_height="45dp"
@@ -94,7 +132,6 @@
                 android:contentDescription="Background"
                 android:layout_gravity="center"/>
 
-            <!-- calendarIcon ImageButton -->
             <ImageButton
                 android:id="@+id/calendarIcon"
                 android:layout_width="30dp"
@@ -128,5 +165,4 @@
             android:onClick="onSettingsIconClick"
             android:contentDescription="Tracker Icon" />
     </LinearLayout>
-
 </RelativeLayout>
