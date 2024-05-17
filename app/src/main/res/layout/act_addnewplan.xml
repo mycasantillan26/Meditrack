@@ -1,0 +1,541 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <RelativeLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/calendarText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:text="MAGBUHAT UG BAG-O NGA PLANO"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="50dp">
+
+            <ImageView
+                android:id="@+id/pillsIcon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/edittext_stroke"
+                android:contentDescription="Pills Icon" />
+
+            <ImageButton
+                android:id="@+id/uploadImageButton"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="10dp"
+                android:background="@drawable/upload"
+                android:contentDescription="Upload Image"
+
+                />
+
+        </FrameLayout>
+
+
+        <EditText
+            android:id="@+id/nameEditText"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/edittext_background"
+            android:gravity="center"
+            android:hint="Ibutang ang ngalan"
+            android:inputType="text"
+            android:textColor="#000000"
+            android:textColorHint="#000000" />
+
+        <Spinner
+            android:id="@+id/unitsDropdown"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameEditText"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="130dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:layout_marginStart="50dp"
+            android:hint="Unit"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:inputType="none"
+            android:textColorHint="#000000"
+            android:entries="@array/unit_array"
+            android:background="@drawable/edittext_background" />
+
+
+        <EditText
+            android:id="@+id/dosageEditText"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nameEditText"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="35dp"
+            android:gravity="center"
+            android:layout_marginBottom="20dp"
+            android:hint="Dosage"
+            android:inputType="numberDecimal"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            android:background="@drawable/edittext_background" />
+
+
+        <Spinner
+            android:id="@+id/startDateSpinner"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unitsDropdown"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center_vertical"
+            android:hint="Start Date"
+            android:entries="@array/start_date_array"
+            android:background="@drawable/edittext_background" />
+
+
+        <Spinner
+            android:id="@+id/endDateSpinner"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dosageEditText"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center_vertical"
+            android:layout_toEndOf="@id/startDateSpinner"
+            android:hint="End Date"
+            android:entries="@array/end_date_array"
+            android:background="@drawable/edittext_background" />
+
+
+        <TextView
+            android:id="@+id/intakeMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/endDateSpinner"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:text="Intake Method:"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+
+        <Spinner
+            android:id="@+id/inTimeSpinner"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/intakeMethod"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/edittext_background"
+            android:entries="@array/in_time"
+            android:hint="In time" />
+
+
+        <TextView
+            android:id="@+id/counterTextView"
+            android:layout_width="22dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dayButtonsContainer"
+            android:layout_marginStart="70dp"
+            android:layout_marginTop="10dp"
+            android:text="1."
+            android:textColor="#FFFFFF"
+            android:textSize="25sp" />
+
+        <EditText
+            android:id="@+id/timeEditText"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dayButtonsContainer"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            />
+
+        <Button
+            android:id="@+id/addTimeButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/dayButtonsContainer"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="+"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/counterTextView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/counterTextView"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="70dp"
+            android:text="2"
+            android:textSize="25sp"
+            android:textColor="#FFFFFF"
+            />
+
+        <EditText
+            android:id="@+id/timeEditText2"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeEditText"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="25dp"
+            android:gravity="center"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            />
+
+        <Button
+            android:id="@+id/addTimeButton2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/addTimeButton"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+
+
+        <TextView
+            android:id="@+id/counterTextView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/counterTextView2"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="70dp"
+            android:text="3"
+            android:textSize="25sp"
+            android:textColor="#FFFFFF"
+            />
+
+        <EditText
+            android:id="@+id/timeEditText3"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeEditText2"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="100dp"
+            android:gravity="center"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            />
+
+        <Button
+            android:id="@+id/addTimeButton3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/addTimeButton2"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+
+        <Button
+            android:id="@+id/addTimeButton4"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/addTimeButton3"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/counterTextView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/counterTextView3"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="70dp"
+            android:text="4"
+            android:textSize="25sp"
+            android:textColor="#FFFFFF"
+            />
+
+
+        <Button
+            android:id="@+id/addTimeButton5"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/addTimeButton4"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" />
+
+
+
+
+
+
+        <TextView
+            android:id="@+id/counterTextView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/counterTextView4"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="70dp"
+            android:text="5"
+            android:textSize="25sp"
+            android:textColor="#FFFFFF"
+            />
+
+
+        <EditText
+            android:id="@+id/timeEditText4"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeEditText3"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            />
+
+        <EditText
+            android:id="@+id/timeEditText5"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeEditText4"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            />
+
+
+
+
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="30dp"
+            android:layout_below="@id/hourNumber"
+            android:hint="Comment"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            android:background="@drawable/edittext_background" />
+
+        <!-- Add Reminder button -->
+        <Button
+            android:id="@+id/addReminderButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/commentEditText"
+            android:layout_marginTop="200dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="0dp"
+            android:text="Add Reminder"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:background="@drawable/button_background" />
+
+        <!--Every x Hours -->
+
+        <EditText
+            android:id="@+id/hourNumber"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timeEditText5"
+            android:layout_alignEnd="@+id/inTimeSpinner"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Select Time"
+            android:gravity="center"
+            android:textColor="#000000"
+            android:textColorHint="#808080"
+            /> <!-- Set initial visibility to gone -->
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/addTimeButton5"
+            android:layout_marginStart="300dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="+"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" /> <!-- Set initial visibility to gone -->
+        <Button
+            android:id="@+id/subButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/counterTextView5"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/circle_white_background"
+            android:text="-"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp" /> <!-- Set initial visibility to gone -->
+
+        <FrameLayout
+            android:id="@+id/dayButtonsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/inTimeSpinner"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:orientation="horizontal">
+
+            <!-- Monday Button -->
+            <Button
+                android:id="@+id/mondayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Mon"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:layout_marginStart="50dp"/>
+
+            <!-- Tuesday Button -->
+            <Button
+                android:id="@+id/tuesdayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Tue"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_marginStart="100dp"/>
+
+            <!-- Wednesday Button -->
+            <Button
+                android:id="@+id/wednesdayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Wed"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:layout_marginStart="150dp"/>
+
+            <!-- Thursday Button -->
+            <Button
+                android:id="@+id/thursdayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Thu"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:layout_marginStart="200dp"/>
+
+            <!-- Friday Button -->
+            <Button
+                android:id="@+id/fridayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Fri"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:layout_marginStart="250dp"/>
+
+            <!-- Saturday Button -->
+            <Button
+                android:id="@+id/saturdayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Sat"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:layout_marginStart="300dp"/>
+
+            <!-- Sunday Button -->
+            <Button
+                android:id="@+id/sundayButton"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_white_background"
+                android:text="Sun"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp" />
+
+        </FrameLayout>
+
+
+    </RelativeLayout>
+</ScrollView>

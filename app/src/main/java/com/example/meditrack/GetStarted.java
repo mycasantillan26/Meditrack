@@ -22,10 +22,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class GetStarted extends AppCompatActivity {
 
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin;
     private TextView textViewError, createAccount;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,6 @@ public class GetStarted extends AppCompatActivity {
         buttonLogin = findViewById(R.id.buttonLogin);
         textViewError = findViewById(R.id.textViewError);
         createAccount = findViewById(R.id.CreateAccount);
-
-        mAuth = FirebaseAuth.getInstance();
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,8 +84,8 @@ public class GetStarted extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // User successfully logged in
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
+                            currentUser = mAuth.getCurrentUser();
+                            if (currentUser != null) {
                                 // Redirect to Today activity
                                 Intent intent = new Intent(GetStarted.this, Today.class);
                                 startActivity(intent);

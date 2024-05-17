@@ -9,8 +9,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 
-public class Landingpage extends AppCompatActivity {
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+public class Landingpage extends AppCompatActivity {
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
     private static final int DELAY_TIME_MS = 2000; // 2 seconds delay
 
     @Override
@@ -32,7 +37,11 @@ public class Landingpage extends AppCompatActivity {
                 loadingProgressBar.setVisibility(android.view.View.GONE);
 
                 // Start the GetStarted activity
-                startActivity(new Intent(Landingpage.this, GetStarted.class));
+                if (currentUser == null) {
+                    startActivity(new Intent(Landingpage.this, GetStarted.class));
+                }else {
+                    startActivity(new Intent(Landingpage.this, Today.class));
+                }
                 finish(); // Finish the Landingpage activity
             }
         }, DELAY_TIME_MS);

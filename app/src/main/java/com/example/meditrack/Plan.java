@@ -42,5 +42,8 @@ public class Plan {
                     // Error adding document
                     System.err.println("Error adding plan: " + e);
                 });
+
+
     }
+    
 }

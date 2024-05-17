@@ -1,5 +1,4 @@
 package com.example.meditrack;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,14 +10,16 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Calendar;
@@ -139,10 +140,18 @@ public class Register extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        // Registration success, navigate to another activity
-                        Intent intent = new Intent(Register.this, GetStarted.class);
-                        startActivity(intent);
-                        finish(); // Finish the current activity
+                        // Registration success, get user ID
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        String userId = firebaseUser.getUid();
+
+                        // Save user details to Realtime Database
+                        saveUserDetailsToDatabase(userId);
+
+                        // Send OTP to email or phone (let's use email for this example)
+                        sendEmailVerification(firebaseUser);
+
+                        // Navigate to the Verify activity
+                        navigateToGetStartedactivity();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -151,6 +160,70 @@ public class Register extends AppCompatActivity {
                         // Registration failed, display an error message
                         Toast.makeText(Register.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                });
+
+        addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Registration failed, display an error message
+                Toast.makeText(Register.this, "Registration failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addOnFailureListener(OnFailureListener onFailureListener) {
+    }
+
+
+    private void sendEmailVerification(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnSuccessListener(aVoid -> Toast.makeText(Register.this, "Verification email sent.", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(Register.this, "Failed to send verification email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+    private void sendOtpToEmail(String email) {
+        // This would be an API call to your backend
+        // For demonstration, replace this with your actual API call logic
+        String url = "https://yourbackend.example.com/send-otp?email=" + email;
+        // Make the network request to your server to send the OTP
+        // Use Volley, Retrofit, or any other HTTP library
+    }
+
+    private void verifyOtp(String otp, String email) {
+        // After the user receives the OTP via email and inputs it in the app
+        String url = "https://yourbackend.example.com/verify-otp?email=" + email + "&otp=" + otp;
+        // Make the network request to verify the OTP
+    }
+
+
+    private void navigateToGetStartedactivity() {
+        Intent intent = new Intent(Register.this, GetStarted.class);
+        startActivity(intent);
+    }
+
+
+    private void saveUserDetailsToDatabase(String userId) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
+
+        // Create a new User object
+        User user = new User(userId,
+                firstNameEditText.getText().toString().trim(),
+                lastNameEditText.getText().toString().trim(),
+                emailEditText.getText().toString().trim(),
+                numberEditText.getText().toString().trim(),
+                birthDateEditText.getText().toString().trim(),
+                usernameEditText.getText().toString().trim(),
+                passwordEditText.getText().toString().trim(),
+                confirmPasswordEditText.getText().toString().trim());
+
+        // Store user details in database
+        databaseReference.child(userId).setValue(user)
+                .addOnSuccessListener(aVoid -> {
+                    // Data saved successfully
+                    Toast.makeText(Register.this, "User details saved", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // Failed to save data
+                    Toast.makeText(Register.this, "Failed to save user details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

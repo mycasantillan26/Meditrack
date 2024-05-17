@@ -1,0 +1,149 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <TextView
+        android:id="@+id/calendarText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Kalendaryo"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF" />
+    <LinearLayout
+        android:id="@+id/customHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarText"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="30dp">
+
+        <TextView
+            android:id="@+id/monthYearText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month Year"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+
+
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/calendarText"
+        android:layout_marginTop="50dp"
+        style="@style/CalendarViewCustom" />
+
+    <LinearLayout
+        android:id="@+id/dateMarkersLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/calendarView"
+        android:gravity="center_horizontal" />
+
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/calendarText"
+        android:layout_marginTop="69dp"
+        android:background="@drawable/gradient_background" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_below="@id/calendarView"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/gradient_background" />
+
+
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/profile101"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:contentDescription="Profile"
+        android:onClick="onProfileButtonClick" />
+
+    <LinearLayout
+        android:id="@+id/navigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#D9D9D9"
+        android:padding="8dp"
+        android:alpha="0.3">
+
+        <ImageButton
+            android:id="@+id/todayIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Today Icon"
+            android:onClick="onTodayIconClick"
+            android:scaleType="fitCenter"
+            android:src="@drawable/home123"
+            android:layout_gravity="center"/>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/circle_white_background"
+                android:contentDescription="Background"
+                android:layout_gravity="center"/>
+
+            <ImageButton
+                android:id="@+id/calendarIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/calendar123"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:onClick="onCalendarIconClick"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/imgIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/img"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onImgIconClick"
+            android:contentDescription="Image Icon" />
+
+        <ImageButton
+            android:id="@+id/trackerIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/tracker"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onSettingsIconClick"
+            android:contentDescription="Tracker Icon" />
+    </LinearLayout>
+</RelativeLayout>

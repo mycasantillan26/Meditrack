@@ -4,22 +4,46 @@
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background">
 
-
-    <ImageButton
-        android:id="@+id/profileButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="135dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/profile123"
-        android:contentDescription="Profile"
-        android:onClick="onProfileButtonClick" />
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="41dp"
+        android:layout_marginBottom="70dp"
+        android:orientation="vertical">
+
+
+        <Button
+            android:id="@+id/savebutton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="#2196F3"
+            android:text="SAVE"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/generateGraph"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="#2196F3"
+            android:text="graph"
+            android:textSize="20dp" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/calendarText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:text="Symptoms Tracker"
@@ -27,77 +51,56 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/dateText"
-        android:layout_width="278dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/navigationBar"
-        android:layout_alignParentStart="true"
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/profile101"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginBottom="543dp"
-        android:text="Date Today: March 04, 2024"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:layout_marginEnd="20dp"
+        android:contentDescription="Profile"
+        android:onClick="onProfileButtonClick" />
+
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="90dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="330dp"
+        android:layout_height="121dp"
         android:layout_above="@+id/navigationBar"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="70dp"
-        android:layout_marginEnd="56dp"
-        android:layout_marginBottom="426dp"
+        android:layout_marginStart="38dp"
+        android:layout_marginEnd="43dp"
+        android:layout_marginBottom="392dp"
         android:orientation="vertical">
 
 
-        <Spinner
-            android:id="@+id/dropdown_button"
-            android:layout_width="107dp"
-            android:layout_height="46dp"
-            android:layout_gravity="center"
-            />
-<!--            android:entries="@array/checklist_items"-->
-
-
-        <TextView
-            android:id="@+id/selected_items_text"
+        <Button
+            android:id="@+id/selectSymptomsButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="73dp"
             android:layout_gravity="center"
-            android:text="Selected Items:" />
+            android:layout_marginTop="16dp"
+            android:text="SELECT SYMPTOMS"
+            android:textSize="20dp" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/savebutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/navigationBar"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="169dp"
-        android:layout_marginEnd="148dp"
-        android:layout_marginBottom="335dp"
-        android:backgroundTint="#2196F3"
-        android:text="SAVE" />
-
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="310dp"
-        android:layout_height="152dp"
+        android:id="@+id/selected_symptoms_display"
+        android:layout_width="wrap_content"
+        android:layout_height="233dp"
         android:layout_above="@+id/navigationBar"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="60dp"
-        android:layout_marginEnd="41dp"
-        android:layout_marginBottom="86dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginBottom="146dp"
         android:background="#E0F7FA"
-        android:text="Selected symptoms will appear here..." />
+        android:text="Selected symptoms will appear here..."
+        android:textColor="#000000"
+        android:textSize="20dp" />
 
     <LinearLayout
         android:id="@+id/navigationBar"
@@ -133,19 +136,18 @@
             android:scaleType="fitCenter"
             android:onClick="onCalendarIconClick" />
 
+
         <ImageButton
             android:id="@+id/imgIcon"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/img"
             android:background="?android:attr/selectableItemBackground"
-            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:contentDescription="Image Icon"
             android:onClick="onImgIconClick"
-            android:contentDescription="Image Icon" />
-
-
-
+            android:scaleType="fitCenter"
+            android:src="@drawable/img" />
 
         <FrameLayout
             android:layout_width="0dp"
@@ -174,13 +176,4 @@
         </FrameLayout>
     </LinearLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
 </RelativeLayout>
-
-

@@ -7,137 +7,126 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.graphics.Color;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class Plans extends AppCompatActivity {
-
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
     private TextView noPlansText;
-    private TextView plansTextView;
-    private TextView nameTextView; // Declare TextView for Name
-    private TextView dosageTextView; // Declare TextView for Dosage
-    private TextView unitTextView; // Declare TextView for Unit
-    private TextView intakeMethodTextView; // Declare TextView for Intake Method
-    private TextView timeTextView; // Declare TextView for Time
-    private TextView daysTextView; // Declare TextView for Days
-    private List<String> planNames; // List to hold plan names
+    private List<Map<String, Object>> planDataList;
+    private LinearLayout planContainer;
     private FirebaseFirestore db;
-    private List<Map<String, Object>> planDataList; // List to hold plan data
+
+    private Button plusButton;
+    private Button plusButton2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        if(currentUser == null) {
+            startActivity(new Intent(Plans.this, GetStarted.class));
+        }
+            super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_plans);
 
-        // Initialize Firestore
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         db = FirebaseFirestore.getInstance();
-
-        // Initialize UI elements
         noPlansText = findViewById(R.id.noPlansText);
-        plansTextView = findViewById(R.id.plansTextView);
+        planContainer = findViewById(R.id.planContainer);
+        plusButton = findViewById(R.id.plusButton);
+        plusButton2 = findViewById(R.id.plusButton2);
+        ImageButton todayIcon = findViewById(R.id.todayIcon);
+        ImageButton calendarIcon = findViewById(R.id.calendarIcon);
+        ImageButton trackerIcon = findViewById(R.id.trackerIcon);
+        ImageButton profileButton = findViewById(R.id.profileButton);
 
-        // Initialize TextViews
-        nameTextView = findViewById(R.id.nameTextView);
-        dosageTextView = findViewById(R.id.dosageTextView);
-        unitTextView = findViewById(R.id.unitTextView);
-        intakeMethodTextView = findViewById(R.id.intakeMethodTextView);
-        timeTextView = findViewById(R.id.timeTextView);
-        daysTextView = findViewById(R.id.daysTextView);
 
-        // Retrieve plans from Firestore
         retrievePlansFromFirestore();
-
-        // Set up OnClickListener for other buttons (profileButton, todayIcon, etc.)
-        setupOnClickListeners();
+        setupButtons();
     }
 
-    private void setupOnClickListeners() {
-        // PlusButton OnClickListener
-        Button plusButton = findViewById(R.id.plusButton);
-        plusButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the AddNewPlan activity when plusButton is clicked
-                Intent intent = new Intent(Plans.this, AddNewPlan.class);
-                startActivity(intent);
-            }
+    private void setupButtons() {
+        plusButton.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
+        plusButton2.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
+
+        ImageButton profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Plans.this, Profile.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            finish(); // Close the current activity
         });
 
-        // TodayIcon OnClickListener
         ImageButton todayIcon = findViewById(R.id.todayIcon);
-        todayIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the Today activity when todayIcon is clicked
-                Intent intent = new Intent(Plans.this, Today.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
+        todayIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(Plans.this, Plans.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
         });
 
-        // CalendarIcon OnClickListener
         ImageButton calendarIcon = findViewById(R.id.calendarIcon);
-        calendarIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the CalendarActivity when calendarIcon is clicked
-                Intent intent = new Intent(Plans.this, CalendarActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
+        calendarIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(Plans.this, CalendarActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+
         });
 
-        // ImgIcon OnClickListener (Refresh Plans)
         ImageButton imgIcon = findViewById(R.id.imgIcon);
-        imgIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Refresh the current activity by restarting it
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            }
+        imgIcon.setOnClickListener(v -> {
+            // Already on "plans" page
         });
 
-        // TrackerIcon OnClickListener
         ImageButton trackerIcon = findViewById(R.id.trackerIcon);
-        trackerIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Start the TrackSymptoms activity when trackerIcon is clicked
-                Intent intent = new Intent(Plans.this, TrackSymptoms.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
+        trackerIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(Plans.this, TrackSymptoms.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
     }
 
     private void retrievePlansFromFirestore() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
-            String userId = currentUser.getUid();
             db.collection("plans")
-                    .whereEqualTo("userId", userId)
+                    .whereEqualTo("userId", currentUser.getUid())
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             planDataList = new ArrayList<>();
                             for (DocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> planData = document.getData();
+                                planData.put("planId", document.getId());
                                 planDataList.add(planData);
                             }
-                            displayPlans(); // Once plans are retrieved, display them
+                            displayPlans();
                         } else {
                             Toast.makeText(this, "Failed to fetch plans", Toast.LENGTH_SHORT).show();
                         }
@@ -147,72 +136,117 @@ public class Plans extends AppCompatActivity {
 
     private void displayPlans() {
         if (planDataList != null && !planDataList.isEmpty()) {
-            // Plans exist, hide the "No Plans" text
             findViewById(R.id.imgIcon2).setVisibility(View.GONE);
             noPlansText.setVisibility(View.GONE);
+            plusButton.setVisibility(View.GONE);
+            plusButton2.setVisibility(View.VISIBLE);
 
-            // Iterate through each plan data
+            planContainer.removeAllViews();
             for (Map<String, Object> planData : planDataList) {
                 // Extract relevant information from the plan data
                 String name = (String) planData.get("name");
-                Object dosageObject = planData.get("dosage");
-                int dosage;
-                if (dosageObject instanceof Long) {
-                    dosage = ((Long) dosageObject).intValue();
-                } else if (dosageObject instanceof Integer) {
-                    dosage = (Integer) dosageObject;
-                } else {
-                    dosage = 0; // Default value or handle it as per your requirement
-                }
+                int dosage = ((Long) planData.get("dosage")).intValue(); // Cast long to int safely
                 String unit = (String) planData.get("unit");
                 String intakeMethod = (String) planData.get("Intake_method");
-                com.google.firebase.Timestamp startTimeStamp = (com.google.firebase.Timestamp) planData.get("startDate");
-                String startTime = startTimeStamp.toDate().toString();
+                Timestamp startTimeStamp = (Timestamp) planData.get("startDate");
+                Timestamp endTimeStamp = (Timestamp) planData.get("endDate");
 
-                com.google.firebase.Timestamp endTimeStamp = (com.google.firebase.Timestamp) planData.get("endDate");
-                String endTime = endTimeStamp.toDate().toString();
+                Date startDate = startTimeStamp.toDate();
+                Date endDate = endTimeStamp.toDate();
 
+                int days = calculateDays(startDate, endDate);
 
-                // Format the start and end date times into readable format (e.g., days user takes the medicine)
-                // Here you need to implement the logic to calculate days based on start and end time
-                // For now, let's assume you have a method called calculateDays() to calculate days
-
-                // Calculate the days
-                String days = calculateDays(startTime, endTime);
-
-                // Display the information in respective TextViews
-                nameTextView.setText(name);
-                dosageTextView.setText(String.valueOf(dosage));
-                unitTextView.setText(unit);
-                intakeMethodTextView.setText(intakeMethod);
-                timeTextView.setText(startTime); // Assuming timeTextView displays only start time
-                daysTextView.setText(days);
-
-                // Set TextViews visibility to visible
-                nameTextView.setVisibility(View.VISIBLE);
-                dosageTextView.setVisibility(View.VISIBLE);
-                unitTextView.setVisibility(View.VISIBLE);
-                intakeMethodTextView.setVisibility(View.VISIBLE);
-                timeTextView.setVisibility(View.VISIBLE);
-                daysTextView.setVisibility(View.VISIBLE);
+                // Now include the planData when calling createPlanEntryLayout
+                LinearLayout planEntryLayout = createPlanEntryLayout(name, dosage, unit, intakeMethod, startDate, days, planData);
+                planContainer.addView(planEntryLayout);
             }
         } else {
-            // No plans exist, display the "No Plans" text
             findViewById(R.id.imgIcon2).setVisibility(View.VISIBLE);
             noPlansText.setVisibility(View.VISIBLE);
-            // Hide all TextViews
-            nameTextView.setVisibility(View.GONE);
-            dosageTextView.setVisibility(View.GONE);
-            unitTextView.setVisibility(View.GONE);
-            intakeMethodTextView.setVisibility(View.GONE);
-            timeTextView.setVisibility(View.GONE);
-            daysTextView.setVisibility(View.GONE);
+            plusButton.setVisibility(View.VISIBLE);
+            plusButton2.setVisibility(View.GONE);
+            planContainer.removeAllViews();
         }
     }
 
-    // Method to calculate days
-    private String calculateDays(String startTime, String endTime) {
-        // Implement your logic to calculate days
-        return ""; // Placeholder, replace with your implementation
+
+
+    private void displayPlanEntry(Map<String, Object> planData) {
+        String name = (String) planData.get("name");
+        long dosage = (long) planData.get("dosage");  // Cast to long then convert to int
+        String unit = (String) planData.get("unit");
+        String intakeMethod = (String) planData.get("Intake_method");
+        Timestamp startTimeStamp = (Timestamp) planData.get("startDate");
+        Timestamp endTimeStamp = (Timestamp) planData.get("endDate");
+        Date startDate = startTimeStamp.toDate();
+        Date endDate = endTimeStamp.toDate();
+        int days = calculateDays(startDate, endDate);
+
+        LinearLayout planEntryLayout = createPlanEntryLayout(name, dosage, unit, intakeMethod, startDate, days, planData);
+        planContainer.addView(planEntryLayout);
+    }
+
+    private LinearLayout createPlanEntryLayout(String name, long dosage, String unit, String intakeMethod, Date startDate, int days, Map<String, Object> planData) {
+        LinearLayout planEntryLayout = new LinearLayout(this);
+        planEntryLayout.setOrientation(LinearLayout.HORIZONTAL);
+        planEntryLayout.setPadding(0, 8, 0, 5);
+
+        LinearLayout nameAndIntakeLayout = new LinearLayout(this);
+        nameAndIntakeLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1.0f
+        );
+        nameAndIntakeLayout.setLayoutParams(layoutParams);
+
+        TextView nameLabel = new TextView(this);
+        nameLabel.setText(String.format(Locale.getDefault(), "%s %d %s", name, dosage, unit));
+        nameLabel.setTextSize(20);
+        nameLabel.setTextColor(Color.WHITE);
+        nameAndIntakeLayout.addView(nameLabel);
+
+        TextView intakeMethodLabel = new TextView(this);
+        intakeMethodLabel.setText(String.format(Locale.getDefault(), "%s (%s), %d days", intakeMethod, formatTime(startDate), days));
+        intakeMethodLabel.setTextColor(Color.WHITE); // Set text color to white
+        nameAndIntakeLayout.addView(intakeMethodLabel);
+        planEntryLayout.addView(nameAndIntakeLayout);
+
+        Button optionsButton = new Button(this);
+        optionsButton.setText("Options");
+        optionsButton.setOnClickListener(v -> showOptionsDialog((String) planData.get("planId"), planData));
+        planEntryLayout.addView(optionsButton);
+
+        return planEntryLayout;
+    }
+
+
+    private void showOptionsDialog(String planId, Map<String, Object> planData) {
+        OptionsDialogFragment dialog = OptionsDialogFragment.newInstance(planId, planData);
+        dialog.show(getSupportFragmentManager(), "OptionsDialog");
+    }
+
+    private String formatTime(Date date) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.ENGLISH);
+        return timeFormat.format(date);
+    }
+
+    private int calculateDays(Date startDate, Date endDate) {
+        long differenceInMillis = endDate.getTime() - startDate.getTime();
+        return (int) (differenceInMillis / (1000 * 60 * 60 * 24));
+    }
+
+    public void deletePlan(String planId) {
+        if (planId != null && !planId.trim().isEmpty()) {
+            db.collection("plans").document(planId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(Plans.this, "Plan deleted successfully", Toast.LENGTH_SHORT).show();
+                        retrievePlansFromFirestore();  // Refresh the list after delete
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(Plans.this, "Failed to delete plan: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(Plans.this, "Invalid plan ID", Toast.LENGTH_SHORT).show();
+        }
     }
 }

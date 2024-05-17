@@ -19,33 +19,35 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/logoImageView"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
+        android:alpha="0.5"
+        android:background="@drawable/edittext_stroke"
+        android:gravity="center"
+        android:hint="Email"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:alpha="0.5"
-        android:background="@drawable/edittext_stroke"
-        android:hint="Email" />
+        android:textColorHint="@color/white" />
 
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@id/editTextUsername"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
+        android:alpha="0.5"
+        android:background="@drawable/edittext_stroke"
+        android:gravity="center"
+        android:hint="Password"
+        android:inputType="textPassword"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:alpha="0.5"
-        android:background="@drawable/edittext_stroke"
-        android:hint="Password"
-        android:inputType="textPassword" />
+        android:textColorHint="@color/white" />
 
     <Button
         android:id="@+id/buttonLogin"

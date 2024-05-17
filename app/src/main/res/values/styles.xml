@@ -22,9 +22,36 @@
     <style name="CalendarViewStyle" parent="@android:style/Widget.CalendarView">
         <item name="android:dateTextAppearance">@style/BlackDateTextAppearance</item>
     </style>
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    </style>
 
     <style name="BlackDateTextAppearance">
         <item name="android:textColor">#000000</item> <!-- Black color -->
     </style>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
 
+    <!-- Enhanced style for CalendarView to make all text and buttons white -->
+    <style name="CalendarViewCustom" parent="android:Widget.Material.Light.CalendarView">
+        <item name="android:dateTextAppearance">@style/WhiteTextAppearance</item>
+        <item name="android:weekDayTextAppearance">@style/WhiteTextAppearance</item>
+        <item name="android:headerMonthTextAppearance">@style/WhiteTextAppearance</item>
+        <item name="android:textAppearance">@style/WhiteTextAppearance</item>
+    </style>
+
+    <!-- Text appearance style for calendar texts -->
+    <style name="WhiteTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!-- Style for navigation arrows -->
+    <style name="WhiteArrowStyle">
+        <item name="android:tint">@android:color/white</item>
+    </style>
 </resources>

@@ -1,13 +1,10 @@
 package com.example.meditrack;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.ImageButton;
 
 public class Pharmacist extends AppCompatActivity {
 

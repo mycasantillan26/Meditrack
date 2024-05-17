@@ -1,53 +1,39 @@
 package com.example.meditrack;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
-import android.view.Gravity;
-
-
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.text.SimpleDateFormat;
-import android.widget.TextView;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import android.app.DatePickerDialog;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.DatePicker;
-import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
-import android.app.TimePickerDialog;
-import android.widget.TimePicker;
-import android.widget.EditText;
-import android.widget.Button;
-import android.graphics.Color;
-import android.widget.RelativeLayout;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.text.Editable;
-import android.text.TextWatcher;
-import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.HashMap;
-import java.util.Map;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import android.content.Intent;
-import android.text.TextUtils;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Calendar;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import com.google.firebase.Timestamp;
+import android.util.Log;
+import android.widget.AdapterView;
+import android.app.TimePickerDialog;
+import android.widget.TimePicker;
+import android.view.Gravity;
+import java.util.Calendar;
+import android.app.DatePickerDialog;
+import android.widget.DatePicker;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.text.ParseException;
 
 
 
@@ -56,381 +42,147 @@ import java.util.Date;
 
 public class EditPlan extends AppCompatActivity {
 
-    private ArrayAdapter<CharSequence> endDateAdapter;
-    private Spinner inTimeSpinner;
-    private TextView counterTextView;
-    private EditText timeEditText;
-    private Button addTimeButton;
-    private int counter = 1;
-    private RelativeLayout parentLayout; // Declare parentLayout here
-    private boolean isAdditionalLayoutVisible = false;
-    private int hourNumber = 1;
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference planRef;
+    private EditText nameEditText, dosageEditText, commentEditText, timeEditText, timeEditText2, timeEditText3, timeEditText4, timeEditText5;
+    private EditText startDateSpinner, endDateSpinner;
+    private Spinner unitsDropdown, inTimeSpinner;
+    private Button updateButton;
+    private int counter = 0;
+    private int hourNumber = 0;
+    private TextView hourNumberDisplay;
 
-
-    private EditText nameEditText;
-
-    private FirebaseFirestore db;
-
-
-    private List<String> calculateNextOccurrences(int intervalHours) {
-        List<String> nextOccurrences = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-
-        // Get the current time
-        Date currentTime = calendar.getTime();
-
-        // Add the initial time
-        nextOccurrences.add(formatTime(calendar.getTime()));
-
-        // Calculate the next occurrences within a 24-hour period
-        for (int i = 1; i < 24 / intervalHours; i++) {
-            calendar.add(Calendar.HOUR_OF_DAY, intervalHours);
-            nextOccurrences.add(formatTime(calendar.getTime()));
-        }
-
-        return nextOccurrences;
+    private void setupTimePickers() {
+        setupTimePicker(timeEditText);
+        setupTimePicker(timeEditText2);
+        setupTimePicker(timeEditText3);
+        setupTimePicker(timeEditText4);
+        setupTimePicker(timeEditText5);
     }
 
-    // Define formatTime method
-    private String formatTime(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        return sdf.format(date);
-    }
-
-    // Declare selectedDays as a class-level variable
-    private List<String> selectedDays = new ArrayList<>();
-
-    // Update the recordDay method
-    private void recordDay(String day) {
-        // Check if the day is already selected, if not, add it to the list
-        if (!selectedDays.contains(day)) {
-            selectedDays.add(day);
-        } else {
-            // If already selected, remove it (optional, depending on your requirements)
-            selectedDays.remove(day);
-        }
+    private void setupTimePicker(EditText editText) {
+        editText.setFocusable(false);
+        editText.setFocusableInTouchMode(false);
+        editText.setClickable(true);
+        editText.setCursorVisible(false);
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(EditPlan.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        // Set the selected time to the EditText
+                        String timeFormat = (hourOfDay < 12) ? "AM" : "PM";
+                        String time = String.format(Locale.getDefault(), "%02d:%02d %s", hourOfDay % 12, minute, timeFormat);
+                        editText.setText(time);
+                    }
+                }, hour, minute, false);
+                timePickerDialog.show();
+            }
+        });
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (currentUser == null) {
+            startActivity(new Intent(EditPlan.this, GetStarted.class));
+        }
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_addnewplan);
+        setContentView(R.layout.activity_editplan);
 
-        Spinner unitSpinner = findViewById(R.id.unitsDropdown);
-        Spinner startDateSpinner = findViewById(R.id.startDateSpinner);
-        Spinner endDateSpinner = findViewById(R.id.endDateSpinner);
-        EditText dosageEditText = findViewById(R.id.dosageEditText);
-        EditText commentEditText = findViewById(R.id.commentEditText);
-        Button addReminderButton = findViewById(R.id.addReminderButton);
-        Spinner inTimeSpinner = findViewById(R.id.inTimeSpinner);
-        addTimeButton = findViewById(R.id.addTimeButton);
-        counterTextView = findViewById(R.id.counterTextView);
-        EditText timeEditText = findViewById(R.id.timeEditText);
-        parentLayout = findViewById(R.id.rootLayout);
+        initializeViews();
+        setupSpinnerListeners();
+        hourNumberDisplay = findViewById(R.id.hourNumber);
+
+
+
+        String planId = getIntent().getStringExtra("PLAN_ID");
+        if (planId == null) {
+            Toast.makeText(this, "Plan ID is missing", Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            planRef = db.collection("plans").document(planId);
+            fetchPlanDetails();
+            updateButton.setOnClickListener(v -> updatePlanDetails());
+        }
+    }
+
+    private void updateHourNumberDisplay() {
+        if (hourNumberDisplay != null) {
+            hourNumberDisplay.setText(String.valueOf(hourNumber));
+        }
+    }
+
+    private void recordDay(String day) {
+        // Here you can implement whatever you need to do when a day is recorded.
+        // For example, you could update some data structure or view.
+        Log.d("EditPlan", "Day recorded: " + day);
+    }
+
+    private void initializeViews() {
         nameEditText = findViewById(R.id.nameEditText);
+        dosageEditText = findViewById(R.id.dosageEditText);
+        commentEditText = findViewById(R.id.commentEditText);
+        timeEditText = findViewById(R.id.timeEditText);
+        timeEditText2 = findViewById(R.id.timeEditText2);
+        timeEditText3 = findViewById(R.id.timeEditText3);
+        timeEditText4 = findViewById(R.id.timeEditText4);
+        timeEditText5 = findViewById(R.id.timeEditText5);
+        startDateSpinner = findViewById(R.id.startDateSpinner);
+        endDateSpinner = findViewById(R.id.endDateSpinner);
+        unitsDropdown = findViewById(R.id.unitsDropdown);
+        inTimeSpinner = findViewById(R.id.inTimeSpinner);
+        updateButton = findViewById(R.id.updateButton);
 
+        updateButton.setOnClickListener(v -> updatePlanDetails());
 
-
-
-        // Disable views initially
-        counterTextView.setEnabled(false);
-        timeEditText.setEnabled(false);
-        addTimeButton.setEnabled(false);
-        commentEditText.setEnabled(false);
-        addReminderButton.setEnabled(false);
-        unitSpinner.setEnabled(false);
-        startDateSpinner.setEnabled(false);
-        endDateSpinner.setEnabled(false);
-        dosageEditText.setEnabled(false);
-        inTimeSpinner.setEnabled(false);
-
-
-
-        // Set up TextWatcher for nameEditText
-        nameEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Check if nameEditText is empty
-                if (s.toString().isEmpty()) {
-                    // Disable views
-                    counterTextView.setEnabled(false);
-                    timeEditText.setEnabled(false);
-                    addTimeButton.setEnabled(false);
-                    commentEditText.setEnabled(false);
-                    addReminderButton.setEnabled(false);
-                    unitSpinner.setEnabled(false);
-                    startDateSpinner.setEnabled(false);
-                    endDateSpinner.setEnabled(false);
-                    dosageEditText.setEnabled(false);
-                    inTimeSpinner.setEnabled(false);
-                } else {
-                    // Enable views
-                    counterTextView.setEnabled(true);
-                    timeEditText.setEnabled(true);
-                    addTimeButton.setEnabled(true);
-                    commentEditText.setEnabled(true);
-                    addReminderButton.setEnabled(true);
-                    unitSpinner.setEnabled(true);
-                    startDateSpinner.setEnabled(true);
-                    endDateSpinner.setEnabled(true);
-                    dosageEditText.setEnabled(true);
-                    inTimeSpinner.setEnabled(true);
-                }
-            }
-        });
-
-
-        addTimeButton = findViewById(R.id.addTimeButton);
-        counterTextView = findViewById(R.id.counterTextView);
-
-
-        //EditText timeEditText = findViewById(R.id.timeEditText);
-        //timeEditText.setFocusableInTouchMode(true);
-        //timeEditText.setFocusable(true);
-
-// No need to declare timeEditText again
-
-        EditText timeEditText2 = findViewById(R.id.timeEditText2);
-        timeEditText2.setFocusableInTouchMode(true);
-        timeEditText2.setFocusable(true);
-
-        EditText timeEditText3 = findViewById(R.id.timeEditText3);
-        timeEditText3.setFocusableInTouchMode(true);
-        timeEditText3.setFocusable(true);
-
-        EditText timeEditText4 = findViewById(R.id.timeEditText4);
-        timeEditText4.setFocusableInTouchMode(true);
-        timeEditText4.setFocusable(true);
-
-        EditText timeEditText5 = findViewById(R.id.timeEditText5);
-        timeEditText5.setFocusableInTouchMode(true);
-        timeEditText5.setFocusable(true);
-
-
-        Button addTimeButton = findViewById(R.id.addTimeButton);
-        TextView counterTextView = findViewById(R.id.counterTextView);
-        findViewById(R.id.addTimeButton).setOnClickListener(new View.OnClickListener() {
+        // Set up the date pickers
+        setupDatePicker(startDateSpinner);
+        setupDatePicker(endDateSpinner);
+    }
+    private void setupDatePicker(EditText editText) {
+        editText.setFocusable(false);  // Disable keyboard input
+        editText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Increment the counter
-                counter++;
-
-                // Update the TextView to display the new counter value
-                counterTextView.setText(String.valueOf(counter));
-
-                // Show additional layout elements
-                findViewById(R.id.counterTextView2).setVisibility(View.VISIBLE);
-                findViewById(R.id.timeEditText2).setVisibility(View.VISIBLE);
-                findViewById(R.id.addTimeButton2).setVisibility(View.VISIBLE);
-                // Make timeEditText editable
-                EditText timeEditText2 = findViewById(R.id.timeEditText2);
-                timeEditText2.setFocusableInTouchMode(true);
-                timeEditText2.setFocusable(true);
-
-                // Create new instances of EditText and Button
-                EditText newTimeEditText = new EditText(EditPlan.this);
-                Button newAddTimeButton = new Button(EditPlan.this);
-
-                // Set attributes for the new timeEditText
-                newTimeEditText.setId(View.generateViewId());
-                newTimeEditText.setLayoutParams(timeEditText.getLayoutParams());
-                newTimeEditText.setHint("Select Time " + counter);
-                newTimeEditText.setTextColor(Color.BLACK);
-
-                // Set attributes for the new addTimeButton
-                newAddTimeButton.setLayoutParams(addTimeButton.getLayoutParams());
-                newAddTimeButton.setText("+");
-                newAddTimeButton.setTextColor(Color.WHITE);
-                newAddTimeButton.setBackgroundResource(R.drawable.circle_white_background);
-
-                // Add the new EditText and Button to the parent layout
-                ((ViewGroup) parentLayout).addView(newTimeEditText);
-                ((ViewGroup) parentLayout).addView(newAddTimeButton);
+                showDatePickerDialog(editText);
             }
         });
+    }
 
+    private void showDatePickerDialog(EditText editText) {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Update the TextView to display the new counter value
-        counterTextView.setText(String.valueOf(counter));
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                EditPlan.this,
+                new DatePickerDialog.OnDateSetListener() {
 
-        // Create new instances of EditText and Button
-        EditText newTimeEditText = new EditText(EditPlan.this);
-        Button newAddTimeButton = new Button(EditPlan.this);
-
-        // Set attributes for the new timeEditText
-        newTimeEditText.setId(View.generateViewId());
-        newTimeEditText.setLayoutParams(timeEditText.getLayoutParams());
-        newTimeEditText.setHint("Select Time " + counter);
-        newTimeEditText.setTextColor(Color.BLACK);
-
-        // Set attributes for the new addTimeButton
-        newAddTimeButton.setLayoutParams(addTimeButton.getLayoutParams());
-        newAddTimeButton.setText("+");
-        newAddTimeButton.setTextColor(Color.WHITE);
-        newAddTimeButton.setBackgroundResource(R.drawable.circle_white_background);
-
-
-        // Create adapter for unit spinner
-        ArrayAdapter<CharSequence> unitAdapter = ArrayAdapter.createFromResource(this,
-                R.array.unit_array, android.R.layout.simple_spinner_item);
-        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        unitSpinner.setAdapter(unitAdapter);
-
-        // Create adapter for start date spinner
-        ArrayAdapter<CharSequence> startDateAdapter = ArrayAdapter.createFromResource(this,
-                R.array.start_date_array, android.R.layout.simple_spinner_item);
-        startDateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        startDateSpinner.setAdapter(startDateAdapter);
-
-        // Set "Start Date" as the default selection for the start date spinner
-        startDateSpinner.setSelection(startDateAdapter.getPosition("Start Date"));
-
-        startDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = (String) parent.getItemAtPosition(position);
-                if (selectedItem.equals("Start Date")) {
-                    // Set the spinner text to "Start Date"
-                    ((TextView) view).setText("Start Date");
-                } else if (selectedItem.equals("Today")) {
-                    // Display the date for today in Philippines
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
-                    String currentDate = sdf.format(calendar.getTime());
-                    ((TextView) view).setText(currentDate); // Update spinner text
-                    Toast.makeText(EditPlan.this, "Today is: " + currentDate, Toast.LENGTH_SHORT).show();
-                } else if (selectedItem.equals("Tomorrow")) {
-                    // Display the date for tomorrow in Philippines
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("Asia/Manila"));
-                    calendar.add(Calendar.DATE, 1);
-                    String tomorrowDate = sdf.format(calendar.getTime());
-                    ((TextView) view).setText(tomorrowDate); // Update spinner text
-                    Toast.makeText(EditPlan.this, "Tomorrow is: " + tomorrowDate, Toast.LENGTH_SHORT).show();
-                } else if (selectedItem.equals("Select Date")) {
-                    // Open a date picker dialog to select a specific date
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(EditPlan.this, new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                            // Display the selected date
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                            Calendar selectedDateCalendar = Calendar.getInstance();
-                            selectedDateCalendar.set(year, month, dayOfMonth);
-                            String selectedDate = sdf.format(selectedDateCalendar.getTime());
-                            // Update spinner text with the selected date
-                            startDateSpinner.setSelection(startDateAdapter.getPosition("Select Date"));
-                            ((TextView) startDateSpinner.getSelectedView()).setText(selectedDate);
-                            Toast.makeText(EditPlan.this, "Selected date is: " + selectedDate, Toast.LENGTH_SHORT).show();
-                        }
-                    }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-                    datePickerDialog.show();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
-            }
-        });
-
-
-        endDateAdapter = ArrayAdapter.createFromResource(this,
-                R.array.end_date_array, android.R.layout.simple_spinner_item);
-        endDateAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        endDateSpinner.setAdapter(endDateAdapter);
-
-
-        endDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = (String) parent.getItemAtPosition(position);
-                String startDate = ((TextView) startDateSpinner.getSelectedView()).getText().toString();
-
-                if (selectedItem.equals("In One Week")) {
-                    // Calculate end date based on start date + 7 days
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    Calendar calendar = Calendar.getInstance();
-                    try {
-                        Date start = sdf.parse(startDate);
-                        calendar.setTime(start);
-                        calendar.add(Calendar.DATE, 7);
-                        String endDate = sdf.format(calendar.getTime());
-                        ((TextView) view).setText(endDate); // Update spinner text
-                        Toast.makeText(EditPlan.this, "End date is one week from the start date", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Format the date and set it to the EditText
+                        calendar.set(Calendar.YEAR, year);
+                        calendar.set(Calendar.MONTH, month);
+                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                        editText.setText(dateFormat.format(calendar.getTime()));
                     }
-                } else if (selectedItem.equals("In One Month")) {
-                    // Calculate end date based on start date + 1 month
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    Calendar calendar = Calendar.getInstance();
-                    try {
-                        Date start = sdf.parse(startDate);
-                        calendar.setTime(start);
-                        calendar.add(Calendar.MONTH, 1);
-                        String endDate = sdf.format(calendar.getTime());
-                        ((TextView) view).setText(endDate); // Update spinner text
-                        Toast.makeText(EditPlan.this, "End date is one month from the start date", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else if (selectedItem.equals("Constantly")) {
-                    // Calculate end date based on start date + 1 year
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    Calendar calendar = Calendar.getInstance();
-                    try {
-                        Date start = sdf.parse(startDate);
-                        calendar.setTime(start);
-                        calendar.add(Calendar.YEAR, 1);
-                        String endDate = sdf.format(calendar.getTime());
-                        ((TextView) view).setText(endDate); // Update spinner text
-                        Toast.makeText(EditPlan.this, "End date is one year from the start date", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else if (selectedItem.equals("Select Date")) {
-                    // Open a date picker dialog to select a specific date for the end date
-                    DatePickerDialog datePickerDialog = new DatePickerDialog(EditPlan.this, new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                            // Display the selected date
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                            Calendar selectedDateCalendar = Calendar.getInstance();
-                            selectedDateCalendar.set(year, month, dayOfMonth);
-                            String selectedDate = sdf.format(selectedDateCalendar.getTime());
-                            // Update spinner text with the selected date
-                            endDateSpinner.setSelection(endDateAdapter.getPosition("Select Date"));
-                            ((TextView) endDateSpinner.getSelectedView()).setText(selectedDate);
-                            Toast.makeText(EditPlan.this, "Selected end date is: " + selectedDate, Toast.LENGTH_SHORT).show();
-                        }
-                    }, Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH));
-                    datePickerDialog.show();
-                }
-            }
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
+    }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
-            }
-        });
-
-
-        // Spinner inTimeSpinner = findViewById(R.id.inTimeSpinner);
-        //  TextView counterTextView = findViewById(R.id.counterTextView);
-        //Button addTimeButton = findViewById(R.id.addTimeButton);
-
+    private void setupSpinnerListeners() {
         inTimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -461,8 +213,8 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
 
                     // Make timeEditText non-editable and non-clickable
-                    timeEditText.setFocusableInTouchMode(true);
-                    timeEditText.setFocusable(true);
+                    timeEditText.setFocusable(false);
+                    timeEditText.setClickable(true);
 
                     TextView counterTextView = findViewById(R.id.counterTextView);
                     counterTextView.setText("1");
@@ -493,7 +245,7 @@ public class EditPlan extends AppCompatActivity {
                             timePickerDialog.show();
                         }
                     });
-
+                    timeEditText.setFocusableInTouchMode(false);
 
                 } else if (selectedItem.equals("Morning") || selectedItem.equals("Before Sleep")) {
                     // Hide additional layout elements
@@ -586,8 +338,8 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.saturdayButton).setVisibility(View.VISIBLE);
                     findViewById(R.id.sundayButton).setVisibility(View.VISIBLE);
 
-                    timeEditText.setFocusableInTouchMode(true);
-                    timeEditText.setFocusable(true);
+                    timeEditText.setFocusable(false);
+                    timeEditText.setClickable(true);
 
                     EditText timeEditText = findViewById(R.id.timeEditText);
                     timeEditText.setText("Select Time");
@@ -614,24 +366,21 @@ public class EditPlan extends AppCompatActivity {
                             timePickerDialog.show();
                         }
                     });
-
+                    timeEditText.setFocusableInTouchMode(false);
 
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
             }
         });
 
         findViewById(R.id.addTimeButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Increment click counter
                 counter++;
 
-                // Show additional layout elements based on click counter
                 switch (counter) {
                     case 2:
                         findViewById(R.id.counterTextView2).setVisibility(View.VISIBLE);
@@ -667,7 +416,7 @@ public class EditPlan extends AppCompatActivity {
             }
         });
 
-// Set OnClickListener for additional layout elements
+        // Set OnClickListener for additional layout elements
         for (int i = 2; i <= 5; i++) {
             final int index = i;
             findViewById(getResources().getIdentifier("addTimeButton" + i, "id", getPackageName())).setOnClickListener(new View.OnClickListener() {
@@ -681,13 +430,15 @@ public class EditPlan extends AppCompatActivity {
             });
         }
 
+        timeEditText.setFocusable(false);
+        timeEditText.setClickable(true);
         timeEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create a TimePickerDialog to select the time
+
                 Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY); // Get the current hour
-                int minute = calendar.get(Calendar.MINUTE); // Get the current minute
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
                 TimePickerDialog timePickerDialog = new TimePickerDialog(EditPlan.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -702,15 +453,18 @@ public class EditPlan extends AppCompatActivity {
                 timeEditText.setGravity(Gravity.CENTER);
             }
         });
+        timeEditText.setFocusableInTouchMode(false);
 
 
+        timeEditText2.setFocusable(false);
+        timeEditText2.setClickable(true);
         timeEditText2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create a TimePickerDialog to select the time
                 Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY); // Get the current hour
-                int minute = calendar.get(Calendar.MINUTE); // Get the current minute
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
                 TimePickerDialog timePickerDialog = new TimePickerDialog(EditPlan.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -725,14 +479,18 @@ public class EditPlan extends AppCompatActivity {
                 timeEditText2.setGravity(Gravity.CENTER);
             }
         });
+        timeEditText2.setFocusableInTouchMode(false);
 
+
+        timeEditText3.setFocusable(false);
+        timeEditText3.setClickable(true);
         timeEditText3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create a TimePickerDialog to select the time
                 Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY); // Get the current hour
-                int minute = calendar.get(Calendar.MINUTE); // Get the current minute
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
                 TimePickerDialog timePickerDialog = new TimePickerDialog(EditPlan.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -747,7 +505,11 @@ public class EditPlan extends AppCompatActivity {
                 timeEditText3.setGravity(Gravity.CENTER);
             }
         });
+        timeEditText3.setFocusableInTouchMode(false);
 
+
+        timeEditText4.setFocusable(false);
+        timeEditText4.setClickable(true);
         timeEditText4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -769,14 +531,18 @@ public class EditPlan extends AppCompatActivity {
                 timeEditText4.setGravity(Gravity.CENTER);
             }
         });
+        timeEditText4.setFocusableInTouchMode(false);
 
+
+        timeEditText5.setFocusable(false);
+        timeEditText5.setClickable(true);
         timeEditText5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Create a TimePickerDialog to select the time
                 Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY); // Get the current hour
-                int minute = calendar.get(Calendar.MINUTE); // Get the current minute
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
                 TimePickerDialog timePickerDialog = new TimePickerDialog(EditPlan.this,
                         new TimePickerDialog.OnTimeSetListener() {
                             @Override
@@ -791,6 +557,7 @@ public class EditPlan extends AppCompatActivity {
                 timeEditText5.setGravity(Gravity.CENTER);
             }
         });
+        timeEditText5.setFocusableInTouchMode(false);
 
 
         findViewById(R.id.hourNumber).setVisibility(View.VISIBLE);
@@ -884,207 +651,121 @@ public class EditPlan extends AppCompatActivity {
                 button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
             }
         });
+    }
 
+    private void fetchPlanDetails() {
+        planRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) { // Corrected from documentNotFoundException.exists()
+                Map<String, Object> data = documentSnapshot.getData();
+                if (data != null) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+                    nameEditText.setText((String) data.get("name"));
+                    dosageEditText.setText(String.valueOf(data.get("dosage")));
+                    commentEditText.setText((String) data.get("comment"));
 
+                    // Set times if they exist in the document
+                    setTimeEditText(timeEditText, data, "time");
+                    setTimeEditText(timeEditText2, data, "time2");
+                    setTimeEditText(timeEditText3, data, "time3");
+                    setTimeEditText(timeEditText4, data, "time4");
+                    setTimeEditText(timeEditText5, data, "time5");
 
-        // Initialize Firebase Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        addReminderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get values from views
-                String name = nameEditText.getText().toString();
-                String unit = unitSpinner.getSelectedItem().toString();
-                int dosage = Integer.parseInt(dosageEditText.getText().toString());
-
-                // Get selected start date and end date strings
-                String selectedStartDate = startDateSpinner.getSelectedItem().toString();
-                String selectedEndDate = endDateSpinner.getSelectedItem().toString();
-
-                // Convert start date and end date strings to Date objects
-                Date startDateValue = null;
-                Date endDateValue = null;
-
-                // Initialize calendar instance
-                Calendar calendar = Calendar.getInstance();
-
-                // Convert start date string to Date based on selection
-                if (selectedStartDate.equals("Today")) {
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("Tomorrow")) {
-                    calendar.add(Calendar.DATE, 1);
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("In One Week")) {
-                    calendar.add(Calendar.DATE, 7);
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("Select Date")) {
-                    // Handle the case of selecting a specific date from DatePickerDialog
-                    String startDate = ((TextView) startDateSpinner.getSelectedView()).getText().toString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    try {
-                        startDateValue = sdf.parse(startDate);
-                    } catch (java.text.ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                // Convert end date string to Date based on selection
-                if (selectedEndDate.equals("In One Week")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.DATE, 7);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("In One Month")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.MONTH, 1);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("Constantly")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.YEAR, 1);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("Select Date")) {
-                    // Handle the case of selecting a specific date from DatePickerDialog
-                    String endDate = ((TextView) endDateSpinner.getSelectedView()).getText().toString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    try {
-                        endDateValue = sdf.parse(endDate);
-                    } catch (java.text.ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-
-                if (currentUser != null) {
-                    String userId = currentUser.getUid(); // Retrieve the user's ID
-
-                    // Create a map to hold the data
-                    Map<String, Object> plan = new HashMap<>();
-                    plan.put("name", name);
-                    plan.put("unit", unit);
-                    plan.put("dosage", dosage);
-                    plan.put("startDate", startDateValue);
-                    plan.put("endDate", endDateValue);
-                    plan.put("userId", userId); // Add the user's ID as a field
-
-                    // Check the selection in the spinner
-                    String selectedItem = inTimeSpinner.getSelectedItem().toString();
-                    if (selectedItem.equals("Morning") || selectedItem.equals("Before Sleep")) {
-                        // Set fixed time for morning and before sleep
-                        String time = (selectedItem.equals("Morning")) ? "8:00 AM" : "8:00 PM";
-                        plan.put("time", time);
-
-                        // Check if there's a comment and add it to the plan data
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            plan.put("comment", comment);
-                        }
-                    } else if (selectedItem.equals("Every X hours")) {
-                        // Get the selected interval for the hours
-                        int intervalHours = hourNumber; // Make sure hourNumber is properly defined and accessible
-
-                        // Calculate the next occurrences within a 24-hour period
-                        List<String> nextOccurrences = calculateNextOccurrences(intervalHours);
-
-                        // Add the next occurrences to the plan data
-                        plan.put("nextOccurrences", nextOccurrences);
-
-                        // Check if there's a comment and add it to the plan data
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            plan.put("comment", comment);
-                        }
-                    } else if (selectedItem.equals("Specific day of the week")) {
-                        // Check if any day is selected
-                        if (!selectedDays.isEmpty()) {
-                            // Add selected day(s) to the plan data
-                            plan.put("selectedDays", selectedDays);
-                            // Get the time value from the timeEditText field
-                            String timeValue = timeEditText.getText().toString();
-                            // Check if the time field is not empty
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                // Add the time value to the plan data
-                                plan.put("time", timeValue);
-                            }
-
-                            // Check additional time fields for time input
-                            for (int i = 2; i <= 5; i++) {
-                                EditText editText = findViewById(getResources().getIdentifier("timeEditText" + i, "id", getPackageName()));
-                                String additionalTimeValue = editText.getText().toString();
-                                if (!TextUtils.isEmpty(additionalTimeValue)) {
-                                    plan.put("time" + i, additionalTimeValue);
-                                }
-                            }
-
-                            // Check if any comment is provided
-                            String comment = commentEditText.getText().toString();
-                            if (!TextUtils.isEmpty(comment)) {
-                                // Add the comment to the plan data
-                                plan.put("comment", comment);
-                            }
-                        } else {
-                            // Show a message to the user that at least one day should be selected
-                            Toast.makeText(EditPlan.this, "Please select at least one day", Toast.LENGTH_SHORT).show();
-                            return; // Exit the method without adding the plan to Firestore
-                        }
+                    Timestamp startDateTimestamp = (Timestamp) data.get("startDate");
+                    Timestamp endDateTimestamp = (Timestamp) data.get("endDate");
+                    if (startDateTimestamp != null && endDateTimestamp != null) {
+                        Date startDate = startDateTimestamp.toDate();
+                        Date endDate = endDateTimestamp.toDate();
+                        String formattedStartDate = dateFormat.format(startDate);
+                        String formattedEndDate = dateFormat.format(endDate);
+                        startDateSpinner.setText(formattedStartDate);
+                        endDateSpinner.setText(formattedEndDate);
                     } else {
-                        // For other cases, check if "In time" is selected
-                        if (selectedItem.equals("In time")) {
-                            // Get the time value from the timeEditText field
-                            String timeValue = timeEditText.getText().toString();
-                            // Check if the time field is not empty
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                // Add the time value to the plan data
-                                plan.put("time", timeValue);
-                            }
-                        }
-
-                        // Check additional time fields for time input
-                        for (int i = 2; i <= 5; i++) {
-                            EditText editText = findViewById(getResources().getIdentifier("timeEditText" + i, "id", getPackageName()));
-                            String timeValue = editText.getText().toString();
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                plan.put("time" + i, timeValue);
-                            }
-                        }
-
-                        // Check if any comment is provided
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            // Add the comment to the plan data
-                            plan.put("comment", comment);
-                        }
+                        Toast.makeText(this, "Failed to load start or end date.", Toast.LENGTH_SHORT).show();
                     }
-
-                    // Add the data to Firebase Firestore
-                    db.collection("plans").add(plan)
-                            .addOnSuccessListener(documentReference -> {
-                                Toast.makeText(EditPlan.this, "Plan added successfully", Toast.LENGTH_SHORT).show();
-
-                                // Open Plans activity
-                                Intent intent = new Intent(EditPlan.this, Plans.class);
-                                startActivity(intent);
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(EditPlan.this, "Error adding plan", Toast.LENGTH_SHORT).show();
-                            });
                 } else {
-                    // Handle the case where the user is not authenticated
-                    // For example, you could redirect the user to the login screen
+                    Toast.makeText(EditPlan.this, "No data found for this plan.", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(EditPlan.this, "Document does not exist.", Toast.LENGTH_SHORT).show();
             }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(EditPlan.this, "Failed to fetch plan details: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         });
-
-
-
     }
-    private void updateHourNumberDisplay() {
-        TextView hourNumberTextView = findViewById(R.id.hourNumber);
-        hourNumberTextView.setText(String.valueOf(hourNumber));
 
-
-        hourNumberTextView.setGravity(Gravity.CENTER);
+    private void setTimeEditText(EditText editText, Map<String, Object> data, String key) {
+        if (data.containsKey(key)) {
+            editText.setText((String) data.get(key));
+        }
     }
+
+
+
+
+    private void setSpinnerSelection(Spinner spinner, String dateStr) {
+        ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
+        int position = adapter.getPosition(dateStr);
+        if (position != -1) {
+            spinner.setSelection(position);
+        } else {
+            Toast.makeText(this, "Date not found in spinner", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void updatePlanDetails() {
+        Map<String, Object> updatedData = new HashMap<>();
+        updatedData.put("name", nameEditText.getText().toString());
+        updatedData.put("dosage", parseDoubleOrZero(dosageEditText.getText().toString()));
+        updatedData.put("comment", commentEditText.getText().toString());
+        updatedData.put("time", timeEditText.getText().toString());
+        updatedData.put("unit", unitsDropdown.getSelectedItem().toString());
+        updatedData.put("Intake_method", inTimeSpinner.getSelectedItem().toString());
+
+        // Convert startDate and endDate from String to Timestamp
+        updatedData.put("startDate", convertStringToTimestamp(startDateSpinner.getText().toString()));
+        updatedData.put("endDate", convertStringToTimestamp(endDateSpinner.getText().toString()));
+
+        putIfNotEmpty(updatedData, "time2", timeEditText2.getText().toString());
+        putIfNotEmpty(updatedData, "time3", timeEditText3.getText().toString());
+        putIfNotEmpty(updatedData, "time4", timeEditText4.getText().toString());
+        putIfNotEmpty(updatedData, "time5", timeEditText5.getText().toString());
+
+        planRef.update(updatedData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(EditPlan.this, "Plan updated successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(EditPlan.this, "Error updating plan: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("EditPlan", "Update failed: " + e.getMessage());
+                });
+    }
+
+    private Timestamp convertStringToTimestamp(String dateString) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date parsedDate = dateFormat.parse(dateString);
+            return new Timestamp(parsedDate);
+        } catch (ParseException e) {
+            Log.e("EditPlan", "Failed to parse date: " + dateString, e);
+            return null;
+        }
+    }
+
+    private void putIfNotEmpty(Map<String, Object> map, String key, String value) {
+        if (!value.trim().isEmpty()) {
+            map.put(key, value);
+        }
+    }
+
+    private double parseDoubleOrZero(String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
 }

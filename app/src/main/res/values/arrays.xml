@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="checklist_items1">
+        <item>Vibrate only</item>
+        <item>Sounds only</item>
+        <item>Vibrate and Sounds</item>
+        <item>None</item>
+    </string-array>
+    <string-array name="checklist_items2">
+    <item>Radar</item>
+    <item>Night Owl</item>
+    <item>Bells</item>
+    <item>Waves</item>
+        <item>Reflection</item>
+        <item>Galaxy Hymn</item>
+    </string-array>
+    <string-array name="checklist_items3">
+        <item>12:00AM</item>
+        <item>1:00AM</item>
+        <item>2:00AM</item>
+        <item>3:00AM</item>
+        <item>4:00AM</item>
+        <item>5:00AM</item>
+        <item>6:00AM</item>
+        <item>7:00AM</item>
+        <item>8:00AM</item>
+        <item>9:00AM</item>
+        <item>10:00AM</item>
+        <item>11:00AM</item>
+        <item>12:00NN</item>
+        <item>1:00PM</item>
+        <item>2:00PM</item>
+        <item>3:00PM</item>
+        <item>4:00PM</item>
+        <item>5:00PM</item>
+        <item>6:00PM</item>
+        <item>7:00PM</item>
+        <item>8:00PM</item>
+        <item>9:00PM</item>
+        <item>10:00PM</item>
+        <item>11:00PM</item>
+
+    </string-array>
+    <string-array name="checklist_items4" >
+        <item>6:00PM</item>
+        <item>7:00PM</item>
+        <item>8:00PM</item>
+        <item>9:00PM</item>
+        <item>10:00PM</item>
+        <item>11:00PM</item>
+    </string-array>
+    <string-array name="checklist_items5" >
+        <item>English</item>
+        <item>Bisaya</item>
+        <item>Filipino</item>
+    </string-array>
+    <string-array name="checklist_items" >
+        <item>Fever</item>
+        <item>Headaches</item>
+        <item>Shortness of breath</item>
+        <item>Fatigue</item>
+        <item>Edema</item>
+        <item>Chest pain</item>
+        <item>Abnormal heart rhythm</item>
+        <item>Dizziness</item>
+        <item>Back neck pain</item>
+        <item>Blurred or double vision</item>
+        <item>Nausea</item>
+        <item>Buzzing in the ear</item>
+        <item>Insomnia</item>
+        <item>Cough</item>
+        <item>Cold</item>
+        <item>Clogged nose</item>
+        <item>Dysuria</item>
+        <item>Polyuria</item>
+        <item>Stomachache</item>
+        <item>Diarrhea</item>
+        <item>Constipation</item>
+        <item>Flatulence and bloating</item>
+        <item>Bloody stool</item>
+        <item>Bloody urine</item>
+        <item>Vomiting</item>
+        <item>Chills</item>
+        <item>Shivering</item>
+        <item>Sore throat</item>
+        <item>Itching</item>
+        <item>Rash</item>
+    </string-array>
+</resources>
+

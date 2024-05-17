@@ -1,0 +1,182 @@
+ <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+
+    <ImageButton
+        android:id="@+id/profileButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/profile123"
+        android:contentDescription="Profile"
+        android:onClick="onProfileButtonClick" />
+
+    <TextView
+        android:id="@+id/calendarText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="Symptoms Tracker"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+     <TextView
+         android:id="@+id/dateText"
+         android:layout_width="278dp"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/navigationBar"
+         android:layout_alignParentStart="true"
+         android:layout_alignParentEnd="true"
+         android:layout_marginStart="77dp"
+         android:layout_marginTop="100dp"
+         android:layout_marginEnd="56dp"
+         android:layout_marginBottom="695dp"
+         android:text="Date Today: March 04, 2024"
+         android:textColor="#FFFFFF"
+         android:textSize="20sp"
+         android:textStyle="bold" />
+
+     <LinearLayout
+         android:layout_width="269dp"
+         android:layout_height="186dp"
+         android:layout_above="@+id/navigationBar"
+         android:layout_alignParentStart="true"
+         android:layout_alignParentEnd="true"
+         android:layout_marginStart="70dp"
+         android:layout_marginEnd="72dp"
+         android:layout_marginBottom="355dp"
+         android:orientation="vertical">
+
+
+         <Spinner
+             android:id="@+id/dropdown_button"
+             android:layout_width="158dp"
+             android:layout_height="52dp"
+             android:layout_gravity="center"
+             android:entries="@array/checklist_items" />
+
+         <TextView
+             android:id="@+id/selected_items_text"
+             android:layout_width="131dp"
+             android:layout_height="31dp"
+             android:layout_gravity="center"
+             android:text="Selected Items:" />
+
+     </LinearLayout>
+
+     <Button
+        android:id="@+id/editbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="169dp"
+        android:layout_marginEnd="148dp"
+        android:layout_marginBottom="335dp"
+        android:backgroundTint="#2196F3"
+        android:text="EDIT" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="310dp"
+        android:layout_height="152dp"
+        android:layout_above="@+id/navigationBar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="57dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="86dp"
+        android:background="#E0F7FA"
+        android:text="Selected symptoms will appear here..." />
+
+    <LinearLayout
+        android:id="@+id/navigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#D9D9D9"
+        android:padding="8dp"
+        android:alpha="0.3">
+
+
+        <ImageButton
+            android:id="@+id/todayIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="Today Icon"
+            android:onClick="onTodayIconClick"
+            android:scaleType="fitCenter"
+            android:src="@drawable/home123"
+            android:layout_gravity="center"/>
+
+
+        <ImageButton
+            android:id="@+id/calendarIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/calendar123"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onCalendarIconClick" />
+
+        <ImageButton
+            android:id="@+id/imgIcon"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/img"
+            android:background="?android:attr/selectableItemBackground"
+            android:scaleType="fitCenter"
+            android:onClick="onImgIconClick"
+            android:contentDescription="Image Icon" />
+
+
+
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <!-- White background for trackerIcon -->
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/circle_white_background"
+                android:contentDescription="Background"
+                android:layout_gravity="center"/>
+
+            <!-- trackerIcon ImageButton -->
+            <ImageButton
+                android:id="@+id/trackerIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@drawable/tracker"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:onClick="onSettingsIconClick"
+                android:layout_gravity="center" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+ </RelativeLayout>
+
+
