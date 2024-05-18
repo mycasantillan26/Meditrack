@@ -78,7 +78,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
-        android:background="@drawable/profile123"
+        android:background="@drawable/profile101"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"
         android:contentDescription="Profile"

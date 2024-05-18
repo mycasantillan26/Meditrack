@@ -30,7 +30,15 @@ import androidx.annotation.NonNull;
 
 
 public class CalendarActivity extends AppCompatActivity {
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
+
+
     private CalendarView calendarView;
     private TextView monthYearText;
     private LinearLayout planContainer;

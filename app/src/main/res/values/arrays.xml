@@ -7,12 +7,12 @@
         <item>None</item>
     </string-array>
     <string-array name="checklist_items2">
-    <item>Radar</item>
-    <item>Night Owl</item>
-    <item>Bells</item>
-    <item>Waves</item>
-        <item>Reflection</item>
-        <item>Galaxy Hymn</item>
+    <item>Wake up!</item>
+    <item>Alarm</item>
+    <item>Warning</item>
+    <item>Banana</item>
+        <item>Rooster</item>
+        <item>Birds Chirping</item>
     </string-array>
     <string-array name="checklist_items3">
         <item>12:00AM</item>

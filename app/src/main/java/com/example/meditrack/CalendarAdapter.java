@@ -15,11 +15,11 @@
 
 
     public class CalendarAdapter extends BaseAdapter {
-        private Context context;
-        private List<Date> monthDates;
-        private HashSet<Date> eventDates;
-        private LayoutInflater inflater;
-        private SimpleDateFormat dateFormatter;
+        private final Context context;
+        private final List<Date> monthDates;
+        private final HashSet<Date> eventDates;
+        private final LayoutInflater inflater;
+        private final SimpleDateFormat dateFormatter;
 
         public CalendarAdapter(Context context, List<Date> monthDates, HashSet<Date> eventDates) {
             this.context = context;

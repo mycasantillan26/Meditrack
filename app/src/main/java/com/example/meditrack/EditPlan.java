@@ -33,6 +33,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.text.ParseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 
 
@@ -40,7 +43,15 @@ import java.text.ParseException;
 
 
 public class EditPlan extends AppCompatActivity {
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
+
+
     private DocumentReference planRef;
     private EditText nameEditText, dosageEditText, commentEditText, timeEditText, timeEditText2, timeEditText3, timeEditText4, timeEditText5;
     private EditText startDateSpinner, endDateSpinner;

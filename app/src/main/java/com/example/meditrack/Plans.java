@@ -34,6 +34,12 @@ import java.util.stream.Collectors;
 
 public class Plans extends AppCompatActivity {
 
+
+
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
+
     private TextView noPlansText;
     private List<Map<String, Object>> planDataList;
     private LinearLayout planContainer;
@@ -65,6 +71,15 @@ public class Plans extends AppCompatActivity {
     private void setupOnClickListeners() {
         plusButton.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
         plusButton2.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
+
+
+        ImageButton profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(Plans.this, Profile.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
 
         ImageButton todayIcon = findViewById(R.id.todayIcon);
         todayIcon.setOnClickListener(v -> startActivity(new Intent(Plans.this, Today.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)));

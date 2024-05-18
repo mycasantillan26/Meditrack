@@ -58,12 +58,17 @@ import android.util.Log;            // Required for logging errors or informatio
 
 
 public class Today extends AppCompatActivity {
+
+    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
+    //for one time login fix
+
     private ListView lvTodayPlans;
-    private List<Map<String, Object>> todayPlans = new ArrayList<>();
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
-    private SimpleDateFormat dateDisplayFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
+    private final List<Map<String, Object>> todayPlans = new ArrayList<>();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+    private final SimpleDateFormat dateDisplayFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private TextView tvDayOfWeek, tvDate;
 
     @Override

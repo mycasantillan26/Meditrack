@@ -21,7 +21,7 @@ public class OptionsDialogFragment extends DialogFragment {
 
     private static final String ARG_PLAN_ID = "plan_id";
     private static final String ARG_PLAN_DATA = "plan_data";
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public static OptionsDialogFragment newInstance(String planId, Map<String, Object> planData) {
         OptionsDialogFragment fragment = new OptionsDialogFragment();
