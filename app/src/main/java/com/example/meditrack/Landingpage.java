@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class Landingpage extends AppCompatActivity {
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
     private static final int DELAY_TIME_MS = 2000; // 2 seconds delay
 

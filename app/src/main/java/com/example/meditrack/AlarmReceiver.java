@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.app.PendingIntent;
 import android.media.RingtoneManager;
@@ -18,6 +19,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             String planName = intent.getStringExtra("planName");
             String planId = intent.getStringExtra("planId");
             String time = intent.getStringExtra("time");
+            String alarmTone = intent.getStringExtra("alarmTone");
 
             // Intent for notification to open activity with options
             Intent notifyIntent = new Intent(context, Today.class);
@@ -49,6 +51,32 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             // Notify
             notificationManager.notify(0, builder.build());
+            int alarmToneResId = getAlarmToneResId(alarmTone);
+            if (alarmToneResId != 0) {
+                MediaPlayer mediaPlayer = MediaPlayer.create(context, alarmToneResId);
+                mediaPlayer.start();
+            }
+
+        }
+    }
+
+    private int getAlarmToneResId(String alarmToneName) {
+        switch (alarmToneName) {
+            case "Wake up!":
+                return R.raw.wake_up;
+            case "Alarm":
+                return R.raw.alarm;
+            case "Warning":
+                return R.raw.warning;
+            case "Banana":
+                return R.raw.banana_song;
+            case "Rooster":
+                return R.raw.rooster_alarm;
+            case "Bird Chirping":
+                return R.raw.bird_chirping;
+
+            default:
+                return 0;
         }
     }
 }

@@ -43,9 +43,9 @@ import java.text.ParseException;
 public class EditPlan extends AppCompatActivity {
 
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference planRef;
     private EditText nameEditText, dosageEditText, commentEditText, timeEditText, timeEditText2, timeEditText3, timeEditText4, timeEditText5;
     private EditText startDateSpinner, endDateSpinner;

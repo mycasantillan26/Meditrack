@@ -39,7 +39,7 @@ public class TrackSymptomsGraph extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
 
     @Override

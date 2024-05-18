@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class Plans extends AppCompatActivity {
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
     private TextView noPlansText;
     private List<Map<String, Object>> planDataList;
@@ -78,7 +78,6 @@ public class Plans extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            finish(); // Close the current activity
         });
 
         ImageButton todayIcon = findViewById(R.id.todayIcon);

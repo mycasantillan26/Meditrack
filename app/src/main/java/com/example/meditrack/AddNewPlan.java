@@ -51,7 +51,7 @@ import android.widget.ImageButton;
 public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFragment.ImageChoiceListener {
 
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
 
     private ArrayAdapter<CharSequence> endDateAdapter;
@@ -62,7 +62,7 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
     private EditText dosageEditText;
     private int counter = 1;
     private RelativeLayout parentLayout;
-    private boolean isAdditionalLayoutVisible = false;
+    private final boolean isAdditionalLayoutVisible = false;
     private int hourNumber = 1;
     private String imageUrl = null; // Class level variable to hold the image URL
     private Uri imageUri = null;
@@ -98,7 +98,7 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
 
     // Declare selectedDays as a class-level variable
 
-    private List<String> selectedDays = new ArrayList<>();
+    private final List<String> selectedDays = new ArrayList<>();
 
     // Update the recordDay method
     private void recordDay(String day) {

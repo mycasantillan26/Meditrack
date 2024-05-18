@@ -42,7 +42,7 @@ public class CalendarActivity extends AppCompatActivity {
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CalendarView calendarView;
     private HashSet<Date> planDates;
     private List<Map<String, Object>> planDataList;

@@ -28,7 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class EditProfile extends AppCompatActivity {
 
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
     private Button logoutButton, backButton, saveButton;
     private ImageView editProfileButton;

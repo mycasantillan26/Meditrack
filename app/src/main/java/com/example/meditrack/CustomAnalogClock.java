@@ -17,10 +17,12 @@ import java.util.Calendar;
 
 public class CustomAnalogClock extends View {
     private Paint paint, numeralPaint, centerCirclePaint;
-    private Rect rect = new Rect();
+    private final Rect rect = new Rect();
     private final Handler handler = new Handler();
     private final int UPDATE_INTERVAL = 1000; // 1 second update interval
-    private int centerX, centerY, centerRadius = 10;
+    private int centerX;
+    private int centerY;
+    private final int centerRadius = 10;
 
     public CustomAnalogClock(Context context, AttributeSet attrs) {
         super(context, attrs);

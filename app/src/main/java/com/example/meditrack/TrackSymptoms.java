@@ -29,7 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class TrackSymptoms extends AppCompatActivity {
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
     private FirebaseFirestore db;
     private TextView selectedSymptomsTextView;
@@ -91,7 +91,6 @@ public class TrackSymptoms extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            finish(); // Close the current activity
         });
 
         ImageButton todayIcon = findViewById(R.id.todayIcon);
