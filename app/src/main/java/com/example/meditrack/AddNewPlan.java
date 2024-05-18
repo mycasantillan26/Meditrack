@@ -1152,5 +1152,3 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
         }
     }
 }
-
-

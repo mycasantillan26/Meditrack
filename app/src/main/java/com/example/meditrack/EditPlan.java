@@ -35,6 +35,9 @@ import java.util.Locale;
 import java.text.ParseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 
@@ -46,7 +49,7 @@ public class EditPlan extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
+    private List<String> selectedDays = new ArrayList<>();
     final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private final FirebaseUser currentUser = mAuth.getCurrentUser();
     //for one time login fix
@@ -122,9 +125,11 @@ public class EditPlan extends AppCompatActivity {
 
     private void updateHourNumberDisplay() {
         if (hourNumberDisplay != null) {
-            hourNumberDisplay.setText(String.valueOf(hourNumber));
+            hourNumberDisplay.setText(String.format(Locale.getDefault(), "%d", hourNumber));
         }
     }
+
+
 
     private void recordDay(String day) {
         // Here you can implement whatever you need to do when a day is recorded.
@@ -146,6 +151,13 @@ public class EditPlan extends AppCompatActivity {
         unitsDropdown = findViewById(R.id.unitsDropdown);
         inTimeSpinner = findViewById(R.id.inTimeSpinner);
         updateButton = findViewById(R.id.updateButton);
+        toggleDaySelection((Button) findViewById(R.id.mondayButton), "Monday");
+        toggleDaySelection((Button) findViewById(R.id.tuesdayButton), "Tuesday");
+        toggleDaySelection((Button) findViewById(R.id.wednesdayButton), "Wednesday");
+        toggleDaySelection((Button) findViewById(R.id.thursdayButton), "Thursday");
+        toggleDaySelection((Button) findViewById(R.id.fridayButton), "Friday");
+        toggleDaySelection((Button) findViewById(R.id.saturdayButton), "Saturday");
+        toggleDaySelection((Button) findViewById(R.id.sundayButton), "Sunday");
 
         updateButton.setOnClickListener(v -> updatePlanDetails());
 
@@ -217,6 +229,12 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.fridayButton).setVisibility(View.GONE);
                     findViewById(R.id.saturdayButton).setVisibility(View.GONE);
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
+                    findViewById(R.id.addButton).setVisibility(View.GONE);
+
+                    findViewById(R.id.counterTextView).setVisibility(View.VISIBLE);
+                    findViewById(R.id.timeEditText).setVisibility(View.VISIBLE);
+                    findViewById(R.id.commentEditText).setVisibility(View.VISIBLE); // Assuming you have a commentEditText
+                    findViewById(R.id.addTimeButton).setVisibility(View.VISIBLE);
 
                     // Make timeEditText non-editable and non-clickable
                     timeEditText.setFocusable(false);
@@ -280,6 +298,8 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.saturdayButton).setVisibility(View.GONE);
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
 
+                    findViewById(R.id.timeEditText).setVisibility(View.VISIBLE);
+
 
                     // Set the text of timeEditText to "8:00 AM" for Morning and "8:00 PM" for Before Sleep
                     EditText timeEditText = findViewById(R.id.timeEditText);
@@ -317,6 +337,7 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.fridayButton).setVisibility(View.GONE);
                     findViewById(R.id.saturdayButton).setVisibility(View.GONE);
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
+                    findViewById(R.id.hourNumber).setEnabled(false);
 
 
                     // Show hourNumber, addButton, and subButton
@@ -330,6 +351,19 @@ public class EditPlan extends AppCompatActivity {
                     findViewById(R.id.hourNumber).setVisibility(View.GONE);
                     findViewById(R.id.addButton).setVisibility(View.GONE);
                     findViewById(R.id.subButton).setVisibility(View.GONE);
+                    findViewById(R.id.counterTextView2).setVisibility(View.GONE);
+                    findViewById(R.id.timeEditText2).setVisibility(View.GONE);
+                    findViewById(R.id.addTimeButton2).setVisibility(View.GONE);
+                    findViewById(R.id.counterTextView3).setVisibility(View.GONE);
+                    findViewById(R.id.timeEditText3).setVisibility(View.GONE);
+                    findViewById(R.id.addTimeButton3).setVisibility(View.GONE);
+                    findViewById(R.id.counterTextView4).setVisibility(View.GONE);
+                    findViewById(R.id.timeEditText4).setVisibility(View.GONE);
+                    findViewById(R.id.addTimeButton4).setVisibility(View.GONE);
+                    findViewById(R.id.counterTextView5).setVisibility(View.GONE);
+                    findViewById(R.id.timeEditText5).setVisibility(View.GONE);
+                    findViewById(R.id.addTimeButton5).setVisibility(View.GONE);
+
 
 
                     // Make timeEditText non-editable
@@ -346,9 +380,7 @@ public class EditPlan extends AppCompatActivity {
 
                     timeEditText.setFocusable(false);
                     timeEditText.setClickable(true);
-
-                    EditText timeEditText = findViewById(R.id.timeEditText);
-                    timeEditText.setText("Select Time");
+                    showAdditionalTimeFieldsBasedOnData();
 
                     timeEditText.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -661,33 +693,37 @@ public class EditPlan extends AppCompatActivity {
 
     private void fetchPlanDetails() {
         planRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) { // Corrected from documentNotFoundException.exists()
+            if (documentSnapshot.exists()) {
                 Map<String, Object> data = documentSnapshot.getData();
                 if (data != null) {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
                     nameEditText.setText((String) data.get("name"));
                     dosageEditText.setText(String.valueOf(data.get("dosage")));
                     commentEditText.setText((String) data.get("comment"));
 
-                    // Set times if they exist in the document
-                    setTimeEditText(timeEditText, data, "time");
-                    setTimeEditText(timeEditText2, data, "time2");
-                    setTimeEditText(timeEditText3, data, "time3");
-                    setTimeEditText(timeEditText4, data, "time4");
-                    setTimeEditText(timeEditText5, data, "time5");
+                    updateTimeEditTextFromData(timeEditText, data, "time");
+                    updateTimeEditTextFromData(timeEditText2, data, "time2");
+                    updateTimeEditTextFromData(timeEditText3, data, "time3");
+                    updateTimeEditTextFromData(timeEditText4, data, "time4");
+                    updateTimeEditTextFromData(timeEditText5, data, "time5");
+
+                    showAdditionalTimeFields(data);
 
                     Timestamp startDateTimestamp = (Timestamp) data.get("startDate");
                     Timestamp endDateTimestamp = (Timestamp) data.get("endDate");
                     if (startDateTimestamp != null && endDateTimestamp != null) {
-                        Date startDate = startDateTimestamp.toDate();
-                        Date endDate = endDateTimestamp.toDate();
-                        String formattedStartDate = dateFormat.format(startDate);
-                        String formattedEndDate = dateFormat.format(endDate);
-                        startDateSpinner.setText(formattedStartDate);
-                        endDateSpinner.setText(formattedEndDate);
-                    } else {
-                        Toast.makeText(this, "Failed to load start or end date.", Toast.LENGTH_SHORT).show();
+                        startDateSpinner.setText(dateFormat.format(startDateTimestamp.toDate()));
+                        endDateSpinner.setText(dateFormat.format(endDateTimestamp.toDate()));
+                    }
+
+                    setSpinnerSelection(inTimeSpinner, (String) data.get("Intake_method"));
+                    updateDayButtons((List<String>) data.get("selectedDays"));
+
+                    if (data.containsKey("nextOccurrences")) {
+                        List<String> times = (List<String>) data.get("nextOccurrences");
+                        if (times != null && !times.isEmpty()) {
+                            calculateAndDisplayHourGap(times);
+                        }
                     }
                 } else {
                     Toast.makeText(EditPlan.this, "No data found for this plan.", Toast.LENGTH_SHORT).show();
@@ -700,6 +736,138 @@ public class EditPlan extends AppCompatActivity {
         });
     }
 
+    private void calculateAndDisplayHourGap(List<String> times) {
+        if (times.size() > 1) {
+            hourNumber = calculateAverageInterval(times);
+            updateHourNumberDisplay();
+        }
+    }
+
+    private int calculateAverageInterval(List<String> times) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        long totalMinutes = 0;
+        try {
+            Date previousTime = sdf.parse(times.get(0));
+            for (int i = 1; i < times.size(); i++) {
+                Date currentTime = sdf.parse(times.get(i));
+                if (currentTime.before(previousTime)) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(currentTime);
+                    cal.add(Calendar.DAY_OF_MONTH, 1);
+                    currentTime = cal.getTime();
+                }
+                totalMinutes += TimeUnit.MILLISECONDS.toMinutes(currentTime.getTime() - previousTime.getTime());
+                previousTime = currentTime;
+            }
+            return (int) TimeUnit.MINUTES.toHours(totalMinutes / (times.size() - 1));
+        } catch (ParseException e) {
+            Log.e("EditPlan", "Error calculating average interval", e);
+            return 0;
+        }
+    }
+
+
+    private void showAdditionalTimeFields(Map<String, Object> data) {
+        if (data.containsKey("time2") && !((String) data.get("time2")).isEmpty()) {
+            findViewById(R.id.counterTextView2).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText2).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton2).setVisibility(View.VISIBLE);
+        }
+        if (data.containsKey("time3") && !((String) data.get("time3")).isEmpty()) {
+            findViewById(R.id.counterTextView3).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText3).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton3).setVisibility(View.VISIBLE);
+        }
+        if (data.containsKey("time4") && !((String) data.get("time4")).isEmpty()) {
+            findViewById(R.id.counterTextView4).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText4).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton4).setVisibility(View.VISIBLE);
+        }
+        if (data.containsKey("time5") && !((String) data.get("time5")).isEmpty()) {
+            findViewById(R.id.counterTextView5).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText5).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton5).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateDayButtons(List<String> selectedDays) {
+        if (selectedDays != null) {
+            if (selectedDays.contains("Monday")) setDayButtonSelected((Button) findViewById(R.id.mondayButton));
+            if (selectedDays.contains("Tuesday")) setDayButtonSelected((Button) findViewById(R.id.tuesdayButton));
+            if (selectedDays.contains("Wednesday")) setDayButtonSelected((Button) findViewById(R.id.wednesdayButton));
+            if (selectedDays.contains("Thursday")) setDayButtonSelected((Button) findViewById(R.id.thursdayButton));
+            if (selectedDays.contains("Friday")) setDayButtonSelected((Button) findViewById(R.id.fridayButton));
+            if (selectedDays.contains("Saturday")) setDayButtonSelected((Button) findViewById(R.id.saturdayButton));
+            if (selectedDays.contains("Sunday")) setDayButtonSelected((Button) findViewById(R.id.sundayButton));
+        }
+    }
+
+    private void setDayButtonSelected(Button button) {
+        button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
+    }
+
+
+    private void showAdditionalTimeFieldsBasedOnData() {
+        if (!timeEditText2.getText().toString().isEmpty()) {
+            findViewById(R.id.counterTextView2).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText2).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton2).setVisibility(View.VISIBLE);
+        }
+        if (!timeEditText3.getText().toString().isEmpty()) {
+            findViewById(R.id.counterTextView3).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText3).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton3).setVisibility(View.VISIBLE);
+        }
+        if (!timeEditText4.getText().toString().isEmpty()) {
+            findViewById(R.id.counterTextView4).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText4).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton4).setVisibility(View.VISIBLE);
+        }
+        if (!timeEditText5.getText().toString().isEmpty()) {
+            findViewById(R.id.counterTextView5).setVisibility(View.VISIBLE);
+            findViewById(R.id.timeEditText5).setVisibility(View.VISIBLE);
+            findViewById(R.id.addTimeButton5).setVisibility(View.VISIBLE);
+        }
+    }
+
+
+    private void hideAllTimeFields() {
+        // Hide all time fields and reset visibility
+        findViewById(R.id.counterTextView2).setVisibility(View.GONE);
+        findViewById(R.id.timeEditText2).setVisibility(View.GONE);
+        findViewById(R.id.addTimeButton2).setVisibility(View.GONE);
+        // Repeat for timeEditText3, timeEditText4, timeEditText5
+    }
+
+
+    private void updateTimeEditTextFromData(EditText editText, Map<String, Object> data, String key) {
+        if (data.containsKey(key)) {
+            editText.setText((String) data.get(key));
+            editText.setGravity(Gravity.CENTER); // Set gravity to center for better alignment
+        }
+    }
+    private int calculateHourInterval(String startTime, String endTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault()); // 24-hour format
+        try {
+            Date start = sdf.parse(startTime);
+            Date end = sdf.parse(endTime);
+            if (end.before(start)) {
+                // Adjust for the next day if the end time is earlier in the day than start time
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(end);
+                cal.add(Calendar.DATE, 1);
+                end = cal.getTime();
+            }
+            long difference = end.getTime() - start.getTime();
+            return (int) (difference / (1000 * 60 * 60)); // Convert milliseconds to hours
+        } catch (ParseException e) {
+            Log.e("EditPlan", "Error parsing time", e);
+            return 0;
+        }
+    }
+
+
+
     private void setTimeEditText(EditText editText, Map<String, Object> data, String key) {
         if (data.containsKey(key)) {
             editText.setText((String) data.get(key));
@@ -709,13 +877,13 @@ public class EditPlan extends AppCompatActivity {
 
 
 
-    private void setSpinnerSelection(Spinner spinner, String dateStr) {
+    private void setSpinnerSelection(Spinner spinner, String value) {
         ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinner.getAdapter();
-        int position = adapter.getPosition(dateStr);
+        int position = adapter.getPosition(value);
         if (position != -1) {
             spinner.setSelection(position);
         } else {
-            Toast.makeText(this, "Date not found in spinner", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Value not found in spinner options", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -728,6 +896,8 @@ public class EditPlan extends AppCompatActivity {
         updatedData.put("time", timeEditText.getText().toString());
         updatedData.put("unit", unitsDropdown.getSelectedItem().toString());
         updatedData.put("Intake_method", inTimeSpinner.getSelectedItem().toString());
+        updatedData.put("selectedDays", selectedDays);
+
 
         // Convert startDate and endDate from String to Timestamp
         updatedData.put("startDate", convertStringToTimestamp(startDateSpinner.getText().toString()));
@@ -749,6 +919,7 @@ public class EditPlan extends AppCompatActivity {
                 });
     }
 
+
     private Timestamp convertStringToTimestamp(String dateString) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -760,11 +931,15 @@ public class EditPlan extends AppCompatActivity {
         }
     }
 
+
+
     private void putIfNotEmpty(Map<String, Object> map, String key, String value) {
         if (!value.trim().isEmpty()) {
             map.put(key, value);
         }
     }
+
+
 
     private double parseDoubleOrZero(String value) {
         try {
@@ -772,6 +947,18 @@ public class EditPlan extends AppCompatActivity {
         } catch (NumberFormatException e) {
             return 0.0;
         }
+    }
+    private void toggleDaySelection(Button button, String day) {
+        List<String> selectedDays = new ArrayList<>();  // This should be an instance variable if you need to access it in updatePlanDetails
+        button.setOnClickListener(v -> {
+            if (!selectedDays.contains(day)) {
+                selectedDays.add(day);
+                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color)); // Selected state
+            } else {
+                selectedDays.remove(day);
+                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color)); // Default state
+            }
+        });
     }
 
 }
