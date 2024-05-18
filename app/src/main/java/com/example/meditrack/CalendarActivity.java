@@ -50,6 +50,7 @@ public class CalendarActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_calendar);
+        setupButtons();
 
         calendarView = findViewById(R.id.calendarView);
         monthYearText = findViewById(R.id.monthYearText);
@@ -80,27 +81,44 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-    public void onTodayIconClick(View view) {
-        Intent intent = new Intent(this, Today.class);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
-    }
+    private void setupButtons() {
+        ImageButton profileButton = findViewById(R.id.profileButton);
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(CalendarActivity.this, Profile.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        });
 
-    public void onCalendarIconClick(View view) {
-        Intent intent = new Intent(this, Calendar.class);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
-    }
-    public void onImgIconClick(View view) {
-        Intent intent = new Intent(this, Plans.class);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
-    }
+        ImageButton todayIcon = findViewById(R.id.todayIcon);
+        todayIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(CalendarActivity.this, Today.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
 
-    public void onSettingsIconClick(View view) {
-        Intent intent = new Intent(this, TrackSymptoms.class);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
+        ImageButton calendarIcon = findViewById(R.id.calendarIcon);
+        calendarIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(CalendarActivity.this, CalendarActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+        });
+
+        ImageButton imgIcon = findViewById(R.id.imgIcon);
+        imgIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(CalendarActivity.this, Plans.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+
+        });
+
+        ImageButton trackerIcon = findViewById(R.id.trackerIcon);
+        trackerIcon.setOnClickListener(v -> {
+            // Already on "Tracker" page
+        });
     }
 
 

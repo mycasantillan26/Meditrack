@@ -181,6 +181,9 @@ public class TrackSymptoms extends AppCompatActivity {
                     .addOnSuccessListener(documentReference -> {
                         Toast.makeText(this, "Symptoms Recorded.", Toast.LENGTH_SHORT).show();
                         Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
+                        Intent intent = new Intent(TrackSymptoms.this, TrackSymptomsGraph.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        startActivity(intent);
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(this, "Symptoms Not Recorded.", Toast.LENGTH_SHORT).show();
