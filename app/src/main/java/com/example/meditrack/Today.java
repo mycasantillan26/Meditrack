@@ -17,6 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.widget.TextView;
+import android.util.Log;
+import java.text.ParseException;
+import java.util.HashMap;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,13 +39,25 @@ import java.util.Locale;
 import java.util.Map;
 import android.widget.Button;
 import android.view.View;
+import com.google.firebase.FirebaseApp;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.os.Build;
+import java.util.Calendar;  // Required for Calendar usage
+import java.util.Date;      // Required for Date handling
+import java.text.SimpleDateFormat;  // Required for date parsing and formatting
+import java.text.ParseException;   // Required to handle exceptions from date parsing
+import android.app.AlarmManager;    // Required for setting alarms
+import android.app.PendingIntent;   // Required for alarm intents
+import android.content.Context;     // Required for context usage in intents and alarms
+import android.content.Intent;       // Required for creating intents
+import android.util.Log;            // Required for logging errors or information
+
+
 
 
 public class Today extends AppCompatActivity {
-
-    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
-    //for one time login fix
     private ListView lvTodayPlans;
     private List<Map<String, Object>> todayPlans = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -50,23 +68,23 @@ public class Today extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_today);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        Date today = new Date();
+        setContentView(R.layout.activity_today);
         lvTodayPlans = findViewById(R.id.lvTodayPlans);
         tvDayOfWeek = findViewById(R.id.tvDayOfWeek);
         tvDate = findViewById(R.id.tvDate);
         Button plusButton = findViewById(R.id.plusButton);
+        FirebaseApp.initializeApp(this);
+        FirebaseFirestore.setLoggingEnabled(true);
 
+
+        Date today = new Date();
         tvDayOfWeek.setText(dayFormat.format(today));
         tvDate.setText(dateDisplayFormat.format(today));
-        if(currentUser == null) {
-            startActivity(new Intent(Today.this, GetStarted.class));
-        }
+
         fetchTodayPlans();
 
         setupButtons();
@@ -80,10 +98,8 @@ public class Today extends AppCompatActivity {
         ImageButton profileButton = findViewById(R.id.profileButton);
         profileButton.setOnClickListener(v -> {
             Intent intent = new Intent(Today.this, Profile.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            finish(); // Close the current activity
         });
 
         ImageButton todayIcon = findViewById(R.id.todayIcon);
@@ -94,27 +110,19 @@ public class Today extends AppCompatActivity {
         ImageButton calendarIcon = findViewById(R.id.calendarIcon);
         calendarIcon.setOnClickListener(v -> {
             Intent intent = new Intent(Today.this, CalendarActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
         });
 
         ImageButton imgIcon = findViewById(R.id.imgIcon);
         imgIcon.setOnClickListener(v -> {
             Intent intent = new Intent(Today.this, Plans.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-
         });
 
         ImageButton trackerIcon = findViewById(R.id.trackerIcon);
         trackerIcon.setOnClickListener(v -> {
             Intent intent = new Intent(Today.this, TrackSymptoms.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
     }
 
@@ -125,27 +133,81 @@ public class Today extends AppCompatActivity {
                     .whereEqualTo("userId", currentUser.getUid())
                     .get()
                     .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            String todayStr = dateFormat.format(new Date());
+                        if (task.isSuccessful() && task.getResult() != null) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> planData = document.getData();
-                                Timestamp timestamp = (Timestamp) planData.get("startDate");
-                                String planDateStr = dateFormat.format(timestamp.toDate());
-                                if (planDateStr.equals(todayStr)) {
-                                    todayPlans.add(planData);
-                                }
-                            }
-                            if (!todayPlans.isEmpty()) {
-                                updateListView();
-                            } else {
-                                Toast.makeText(this, "No plans for today.", Toast.LENGTH_SHORT).show();
+                                String planId = document.getId();
+                                String planName = planData.get("name").toString();
+                                List<String> times = extractTimes(planData);
+                                expandPlanData(planData); // Adjust this method as needed
                             }
                         } else {
-                            Toast.makeText(this, "Failed to fetch plans.", Toast.LENGTH_SHORT).show();
+                            String error = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                            Toast.makeText(this, "Failed to fetch plans: " + error, Toast.LENGTH_SHORT).show();
                         }
                     });
+        } else {
+            Toast.makeText(this, "User not logged in.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+    private void expandPlanData(Map<String, Object> originalPlanData) {
+        List<String> times = extractTimes(originalPlanData);
+        for (String time : times) {
+            Map<String, Object> planCopy = new HashMap<>(originalPlanData);
+            planCopy.put("displayTime", time);
+            planCopy.put("isTaken", false); // Assume false initially
+
+            // Log to debug the values being processed
+            Log.d("expandPlanData", "Processing plan: Name=" + planCopy.get("name") + ", Time=" + time);
+
+            todayPlans.add(planCopy);
+        }
+        updateListView(); // Ensure ListView is updated after data changes
+    }
+
+
+    private List<String> extractTimes(Map<String, Object> planData) {
+        List<String> times = new ArrayList<>();
+        SimpleDateFormat parseFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault()); // Ensure AM/PM is handled
+
+        // Check time fields
+        for (int i = 1; i <= 5; i++) {
+            String timeKey = "time" + (i == 1 ? "" : i); // Handle keys like "time", "time2"... "time5"
+            String time = (String) planData.get(timeKey);
+            if (time != null && !time.isEmpty()) {
+                times.add(time); // Directly add the string for alarm setting
+            }
+        }
+
+        // If no regular times, check nextOccurrences
+        List<String> nextOccurrences = (List<String>) planData.get("nextOccurrences");
+        if (nextOccurrences != null) {
+            times.addAll(nextOccurrences);
+        }
+
+        return times;
+    }
+
+
+
+    private Calendar parseTimeToCalendar(String timeStr) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        try {
+            Date date = format.parse(timeStr);
+            calendar.setTime(date);
+            if (calendar.before(Calendar.getInstance())) { // Adjust to next occurrence if time has already passed today
+                calendar.add(Calendar.DATE, 1);
+            }
+        } catch (ParseException e) {
+            Log.e("Parsing", "Error parsing time string: " + timeStr, e);
+        }
+        return calendar;
+    }
+
 
     private void updateListView() {
         if (!todayPlans.isEmpty()) {
@@ -165,6 +227,8 @@ public class Today extends AppCompatActivity {
 
 
     class PlanAdapter extends ArrayAdapter<Map<String, Object>> {
+        private FirebaseFirestore db = FirebaseFirestore.getInstance(); // Firestore instance
+
         public PlanAdapter(Context context, List<Map<String, Object>> plans) {
             super(context, 0, plans);
         }
@@ -175,32 +239,133 @@ public class Today extends AppCompatActivity {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_plan, parent, false);
             }
+
             TextView tvPlanName = convertView.findViewById(R.id.tvPlanName);
             TextView tvPlanTime = convertView.findViewById(R.id.tvPlanTime);
             Button redSquareButton = convertView.findViewById(R.id.redSquareButton);
 
             Map<String, Object> plan = getItem(position);
-            tvPlanName.setText((String) plan.get("name"));
-            Timestamp startTimestamp = (Timestamp) plan.get("startDate");
-            String timeStr = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(startTimestamp.toDate());
-            tvPlanTime.setText(timeStr);
+            String name = (String) plan.get("name");
+            String time = (String) plan.get("displayTime");
+            Boolean isTaken = (Boolean) plan.get("isTaken");
 
-            // Optional: Set onClick listener for redSquareButton
-            redSquareButton.setOnClickListener(v -> {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Today.this);
-                builder.setTitle("What do you want to do?");
-                builder.setMessage("Select an option for the medication.");
-                builder.setPositiveButton("Mark as Taken", (dialog, which) -> {
-                    // Handle marking as taken
-                });
-                builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            });
-
+            tvPlanName.setText(name);
+            tvPlanTime.setText(time);
+            redSquareButton.setEnabled(!isTaken);
 
             return convertView;
         }
-    }
 
+
+        private String extractTimesFormatted(Map<String, Object> planData) {
+            List<String> times = new ArrayList<>();
+            SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+
+            // Extract times from time1 to time5
+            for (int i = 1; i <= 5; i++) {
+                String timeKey = "time" + (i == 1 ? "" : i); // time1, time2, ... time5
+                String time = (String) planData.get(timeKey);
+                if (time != null && !time.isEmpty()) {
+                    try {
+                        Date date = parseFormat.parse(time);
+                        times.add(displayFormat.format(date)); // Format each time
+                    } catch (ParseException e) {
+                        Log.e("TimeFormatting", "Failed to parse time: " + time, e);
+                    }
+                }
+            }
+
+            // Check nextOccurrences if regular times are empty
+            if (times.isEmpty()) {
+                List<String> nextOccurrences = (List<String>) planData.get("nextOccurrences");
+                if (nextOccurrences != null) {
+                    for (String nextTime : nextOccurrences) {
+                        try {
+                            Date date = parseFormat.parse(nextTime);
+                            times.add(displayFormat.format(date)); // Format each time
+                        } catch (ParseException e) {
+                            Log.e("TimeFormatting", "Failed to parse next occurrence time: " + nextTime, e);
+                        }
+                    }
+                }
+            }
+
+            return String.join(", ", times);
+        }
+
+
+        private String formatTimeWithAmPm(String time) {
+            SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+            try {
+                Date date = parseFormat.parse(time);
+                return displayFormat.format(date);
+            } catch (ParseException e) {
+                Log.e("Today", "Failed to parse time", e);
+                return time;  // Return original time if parsing fails
+            }
+        }
+
+        private void showPlanOptions(Map<String, Object> planData, String planName, String time) {
+            String planId = (String) planData.get("planId"); // Retrieve the plan ID set earlier
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Plan Options");
+            builder.setMessage("Select an action for this plan.");
+            builder.setPositiveButton("Mark as Taken", (dialog, which) -> {
+                if (planId != null && !planId.isEmpty()) {
+                    updateMarkAsTaken(planId, planName, time, "Yes");
+                } else {
+                    Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
+                }
+            });
+            builder.setNegativeButton("No", (dialog, which) -> {
+                if (planId != null && !planId.isEmpty()) {
+                    updateMarkAsTaken(planId, planName, time, "No");
+                } else {
+                    Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
+                }
+            });
+            builder.setNeutralButton("Cancel", (dialog, which) -> dialog.dismiss());
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
+
+
+        private void updateMarkAsTaken(String planId, String planName, String time, String taken) {
+            if (planId == null || planId.isEmpty()) {
+                Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Map<String, Object> takenData = new HashMap<>();
+            takenData.put("planId", planId);
+            takenData.put("planName", planName);
+            takenData.put("time", time);
+            takenData.put("taken", taken);
+
+            db.collection("MarkAsTaken").add(takenData)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d("Firestore Success", "Document added with ID: " + documentReference.getId());
+                        Toast.makeText(getContext(), "Success: Data saved", Toast.LENGTH_SHORT).show();
+                        // Find and update the plan as taken in local data
+                        for (Map<String, Object> plan : todayPlans) {
+                            if (planId.equals(plan.get("planId")) && time.equals(plan.get("displayTime"))) {
+                                plan.put("isTaken", true);
+                                notifyDataSetChanged();  // Refresh adapter to update UI
+                                break;
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore Error", "Error adding document", e);
+                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+        }
+    }
 }
+
+
+
+
+

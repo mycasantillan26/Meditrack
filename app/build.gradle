@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.gms.google-services'
+
 }
 
 android {
@@ -31,17 +32,18 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation platform('com.google.firebase:firebase-bom:32.8.0') // Updated Firebase BoM version
+    implementation platform('com.google.firebase:firebase-bom:33.0.0') // Updated Firebase BoM version
     implementation 'com.google.firebase:firebase-analytics'
     implementation("com.google.firebase:firebase-auth") // No need to specify version here
     implementation 'com.google.firebase:firebase-database' // No need to specify version here
-    implementation 'com.google.firebase:firebase-firestore:24.11.0'
-    implementation 'androidx.activity:activity:1.8.0'
-    implementation 'com.google.firebase:firebase-storage:20.0.1'
+    implementation 'com.google.firebase:firebase-firestore:25.0.0'
+    implementation 'androidx.activity:activity:1.9.0'
+    implementation 'com.google.firebase:firebase-storage:21.0.0'
     implementation 'com.github.anastr:speedviewlib:1.5.4'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 
 
 

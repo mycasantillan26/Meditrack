@@ -10,41 +10,40 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import android.graphics.Color;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import android.graphics.Color;
+import android.util.Log;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
+
 
 public class Plans extends AppCompatActivity {
-    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
-    //for one time login fix
+
     private TextView noPlansText;
     private List<Map<String, Object>> planDataList;
     private LinearLayout planContainer;
     private FirebaseFirestore db;
-
     private Button plusButton;
     private Button plusButton2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(currentUser == null) {
-            startActivity(new Intent(Plans.this, GetStarted.class));
-        }
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_plans);
@@ -58,58 +57,30 @@ public class Plans extends AppCompatActivity {
         planContainer = findViewById(R.id.planContainer);
         plusButton = findViewById(R.id.plusButton);
         plusButton2 = findViewById(R.id.plusButton2);
-        ImageButton todayIcon = findViewById(R.id.todayIcon);
-        ImageButton calendarIcon = findViewById(R.id.calendarIcon);
-        ImageButton trackerIcon = findViewById(R.id.trackerIcon);
-        ImageButton profileButton = findViewById(R.id.profileButton);
-
 
         retrievePlansFromFirestore();
-        setupButtons();
+        setupOnClickListeners();
     }
 
-    private void setupButtons() {
+    private void setupOnClickListeners() {
         plusButton.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
         plusButton2.setOnClickListener(v -> startActivity(new Intent(Plans.this, AddNewPlan.class)));
 
-        ImageButton profileButton = findViewById(R.id.profileButton);
-        profileButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Plans.this, Profile.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-            finish(); // Close the current activity
-        });
-
         ImageButton todayIcon = findViewById(R.id.todayIcon);
-        todayIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(Plans.this, Plans.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-        });
+        todayIcon.setOnClickListener(v -> startActivity(new Intent(Plans.this, Today.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)));
 
         ImageButton calendarIcon = findViewById(R.id.calendarIcon);
-        calendarIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(Plans.this, CalendarActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-
-        });
+        calendarIcon.setOnClickListener(v -> startActivity(new Intent(Plans.this, CalendarActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)));
 
         ImageButton imgIcon = findViewById(R.id.imgIcon);
         imgIcon.setOnClickListener(v -> {
-            // Already on "plans" page
+            finish();
+            startActivity(getIntent());
         });
 
         ImageButton trackerIcon = findViewById(R.id.trackerIcon);
-        trackerIcon.setOnClickListener(v -> {
-            Intent intent = new Intent(Plans.this, TrackSymptoms.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-        });
+        trackerIcon.setOnClickListener(v -> startActivity(new Intent(Plans.this, TrackSymptoms.class).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)));
+
     }
 
     private void retrievePlansFromFirestore() {
@@ -135,58 +106,43 @@ public class Plans extends AppCompatActivity {
     }
 
     private void displayPlans() {
+        planContainer.removeAllViews();
         if (planDataList != null && !planDataList.isEmpty()) {
             findViewById(R.id.imgIcon2).setVisibility(View.GONE);
             noPlansText.setVisibility(View.GONE);
             plusButton.setVisibility(View.GONE);
             plusButton2.setVisibility(View.VISIBLE);
-
-            planContainer.removeAllViews();
             for (Map<String, Object> planData : planDataList) {
-                // Extract relevant information from the plan data
-                String name = (String) planData.get("name");
-                int dosage = ((Long) planData.get("dosage")).intValue(); // Cast long to int safely
-                String unit = (String) planData.get("unit");
-                String intakeMethod = (String) planData.get("Intake_method");
-                Timestamp startTimeStamp = (Timestamp) planData.get("startDate");
-                Timestamp endTimeStamp = (Timestamp) planData.get("endDate");
-
-                Date startDate = startTimeStamp.toDate();
-                Date endDate = endTimeStamp.toDate();
-
-                int days = calculateDays(startDate, endDate);
-
-                // Now include the planData when calling createPlanEntryLayout
-                LinearLayout planEntryLayout = createPlanEntryLayout(name, dosage, unit, intakeMethod, startDate, days, planData);
-                planContainer.addView(planEntryLayout);
+                displayPlanEntry(planData);
             }
         } else {
             findViewById(R.id.imgIcon2).setVisibility(View.VISIBLE);
             noPlansText.setVisibility(View.VISIBLE);
             plusButton.setVisibility(View.VISIBLE);
             plusButton2.setVisibility(View.GONE);
-            planContainer.removeAllViews();
         }
     }
 
-
-
     private void displayPlanEntry(Map<String, Object> planData) {
         String name = (String) planData.get("name");
-        long dosage = (long) planData.get("dosage");  // Cast to long then convert to int
+        // Use Number to avoid ClassCastException and convert to int
+        Number dosageNumber = (Number) planData.get("dosage");
+        int dosage = dosageNumber != null ? dosageNumber.intValue() : 0;
         String unit = (String) planData.get("unit");
         String intakeMethod = (String) planData.get("Intake_method");
         Timestamp startTimeStamp = (Timestamp) planData.get("startDate");
         Timestamp endTimeStamp = (Timestamp) planData.get("endDate");
-        Date startDate = startTimeStamp.toDate();
-        Date endDate = endTimeStamp.toDate();
+        Date startDate = startTimeStamp != null ? startTimeStamp.toDate() : new Date();
+        Date endDate = endTimeStamp != null ? endTimeStamp.toDate() : new Date();
         int days = calculateDays(startDate, endDate);
+        String timesFormatted = extractTimesFormatted(planData);
 
-        LinearLayout planEntryLayout = createPlanEntryLayout(name, dosage, unit, intakeMethod, startDate, days, planData);
+        LinearLayout planEntryLayout = createPlanEntryLayout(name, dosage, unit, intakeMethod, startDate, days, timesFormatted, planData);
         planContainer.addView(planEntryLayout);
     }
 
-    private LinearLayout createPlanEntryLayout(String name, long dosage, String unit, String intakeMethod, Date startDate, int days, Map<String, Object> planData) {
+
+    private LinearLayout createPlanEntryLayout(String name, int dosage, String unit, String intakeMethod, Date startDate, int days, String timesFormatted, Map<String, Object> planData) {
         LinearLayout planEntryLayout = new LinearLayout(this);
         planEntryLayout.setOrientation(LinearLayout.HORIZONTAL);
         planEntryLayout.setPadding(0, 8, 0, 5);
@@ -207,8 +163,23 @@ public class Plans extends AppCompatActivity {
         nameAndIntakeLayout.addView(nameLabel);
 
         TextView intakeMethodLabel = new TextView(this);
-        intakeMethodLabel.setText(String.format(Locale.getDefault(), "%s (%s), %d days", intakeMethod, formatTime(startDate), days));
-        intakeMethodLabel.setTextColor(Color.WHITE); // Set text color to white
+        List<String> selectedDays = (List<String>) planData.get("selectedDays");
+
+        // Format day names to abbreviated form
+        String daysText = formatDayNames(selectedDays);
+
+        // Conditional display based on intake method
+        if (intakeMethod.equals("Specific day of the week")) {
+            if (!daysText.isEmpty()) {
+                intakeMethodLabel.setText(String.format(Locale.getDefault(), "%s (%s) %d days.", daysText, timesFormatted, days));
+            } else {
+                intakeMethodLabel.setText(String.format(Locale.getDefault(), "(%s) %d days.", timesFormatted, days));
+            }
+        } else {
+            intakeMethodLabel.setText(String.format(Locale.getDefault(), "%s, (%s) %d days.", intakeMethod, timesFormatted, days));
+        }
+
+        intakeMethodLabel.setTextColor(Color.WHITE);
         nameAndIntakeLayout.addView(intakeMethodLabel);
         planEntryLayout.addView(nameAndIntakeLayout);
 
@@ -220,15 +191,69 @@ public class Plans extends AppCompatActivity {
         return planEntryLayout;
     }
 
+    private String formatDayNames(List<String> days) {
+        if (days == null || days.isEmpty()) {
+            return "";
+        }
+
+        // Map full day names to their abbreviations
+        Map<String, String> dayAbbreviations = new HashMap<>();
+        dayAbbreviations.put("Monday", "MON");
+        dayAbbreviations.put("Tuesday", "TUE");
+        dayAbbreviations.put("Wednesday", "WED");
+        dayAbbreviations.put("Thursday", "THU");
+        dayAbbreviations.put("Friday", "FRI");
+        dayAbbreviations.put("Saturday", "SAT");
+        dayAbbreviations.put("Sunday", "SUN");
+
+        // Transform the list of days to their abbreviations
+        return days.stream()
+                .map(day -> dayAbbreviations.getOrDefault(day, day))
+                .collect(Collectors.joining(", "));
+    }
+
+
+
+
+    private String extractTimesFormatted(Map<String, Object> planData) {
+        List<String> formattedTimes = new ArrayList<>();
+
+        // Directly add time entries
+        for (int i = 1; i <= 5; i++) {
+            String timeKey = "time" + (i == 1 ? "" : i); // Handles keys like "time", "time2" ... "time5"
+            String time = (String) planData.get(timeKey);
+            if (time != null && !time.isEmpty()) {
+                formattedTimes.add(time); // Directly use the time string
+            }
+        }
+
+        // Check nextOccurrences if no times are available
+        List<String> nextOccurrences = (List<String>) planData.get("nextOccurrences");
+        if (formattedTimes.isEmpty() && nextOccurrences != null) {
+            formattedTimes.addAll(nextOccurrences);
+        }
+
+        return String.join(", ", formattedTimes);
+    }
+
+
+
+    private String formatTimeWithAmPm(String time) {
+        SimpleDateFormat parseFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());  // Assumes input times are in 24-hour format
+        SimpleDateFormat displayFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());  // Output in 12-hour format with AM/PM
+
+        try {
+            Date date = parseFormat.parse(time);
+            return displayFormat.format(date);  // This will correctly format with AM/PM
+        } catch (ParseException e) {
+            Log.e("Plans", "Failed to parse time", e);
+            return time;  // Return original time if parsing fails, consider handling error more gracefully
+        }
+    }
 
     private void showOptionsDialog(String planId, Map<String, Object> planData) {
         OptionsDialogFragment dialog = OptionsDialogFragment.newInstance(planId, planData);
         dialog.show(getSupportFragmentManager(), "OptionsDialog");
-    }
-
-    private String formatTime(Date date) {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.ENGLISH);
-        return timeFormat.format(date);
     }
 
     private int calculateDays(Date startDate, Date endDate) {

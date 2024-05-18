@@ -453,6 +453,12 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
                     findViewById(R.id.fridayButton).setVisibility(View.GONE);
                     findViewById(R.id.saturdayButton).setVisibility(View.GONE);
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
+                    findViewById(R.id.addButton).setVisibility(View.GONE);
+
+                    findViewById(R.id.counterTextView).setVisibility(View.VISIBLE);
+                    findViewById(R.id.timeEditText).setVisibility(View.VISIBLE);
+                    findViewById(R.id.commentEditText).setVisibility(View.VISIBLE); // Assuming you have a commentEditText
+                    findViewById(R.id.addTimeButton).setVisibility(View.VISIBLE);
 
                     // Make timeEditText non-editable and non-clickable
                     timeEditText.setFocusable(false);
