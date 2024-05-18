@@ -80,7 +80,7 @@ public class CalendarActivity extends AppCompatActivity {
         });
     }
 
-        public void onTodayIconClick(View view) {
+    public void onTodayIconClick(View view) {
         Intent intent = new Intent(this, Today.class);
         startActivity(intent);
         overridePendingTransition(0, 0);

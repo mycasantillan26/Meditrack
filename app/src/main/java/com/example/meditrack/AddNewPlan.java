@@ -522,6 +522,8 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
                     findViewById(R.id.saturdayButton).setVisibility(View.GONE);
                     findViewById(R.id.sundayButton).setVisibility(View.GONE);
 
+                    findViewById(R.id.timeEditText).setVisibility(View.VISIBLE);
+
 
                     // Set the text of timeEditText to "8:00 AM" for Morning and "8:00 PM" for Before Sleep
                     EditText timeEditText = findViewById(R.id.timeEditText);

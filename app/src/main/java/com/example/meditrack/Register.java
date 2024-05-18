@@ -126,14 +126,37 @@ public class Register extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Set the date into the EditText
                         String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
                         birthDateEditText.setText(selectedDate);
+
+                        // Check if user is 18 or older
+                        if (!isEighteenOrOlder(year, month, dayOfMonth)) {
+                            Toast.makeText(Register.this, "Your age must be 18 and above.", Toast.LENGTH_LONG).show();
+                            // Optionally clear the EditText or handle the logic to prevent registration
+                            birthDateEditText.setText(""); // Clear the text
+                        }
                     }
-                },
-                year, month, dayOfMonth);
+                }, year, month, dayOfMonth);
 
         datePickerDialog.show();
     }
+
+    private boolean isEighteenOrOlder(int year, int month, int day) {
+        Calendar dob = Calendar.getInstance();
+        Calendar today = Calendar.getInstance();
+
+        dob.set(year, month, day);
+
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+            age--; // Adjust for not yet reaching birthday this year
+        }
+
+        return age >= 18;
+    }
+
 
     private void registerUser(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)

@@ -58,17 +58,12 @@ import android.util.Log;            // Required for logging errors or informatio
 
 
 public class Today extends AppCompatActivity {
-
-    final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private final FirebaseUser currentUser = mAuth.getCurrentUser();
-    //for one time login fix
-
     private ListView lvTodayPlans;
-    private final List<Map<String, Object>> todayPlans = new ArrayList<>();
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
-    private final SimpleDateFormat dateDisplayFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
+    private List<Map<String, Object>> todayPlans = new ArrayList<>();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+    private SimpleDateFormat dateDisplayFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
     private TextView tvDayOfWeek, tvDate;
 
     @Override
@@ -141,10 +136,10 @@ public class Today extends AppCompatActivity {
                         if (task.isSuccessful() && task.getResult() != null) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> planData = document.getData();
-                                String planId = document.getId();
+                                planData.put("planId", document.getId()); // Ensure the planId is added here
                                 String planName = planData.get("name").toString();
                                 List<String> times = extractTimes(planData);
-                                expandPlanData(planData); // Adjust this method as needed
+                                expandPlanData(planData);
                             }
                         } else {
                             String error = task.getException() != null ? task.getException().getMessage() : "Unknown error";
@@ -159,14 +154,16 @@ public class Today extends AppCompatActivity {
 
 
     private void expandPlanData(Map<String, Object> originalPlanData) {
+        String planId = originalPlanData.containsKey("planId") ? (String) originalPlanData.get("planId") : "No ID"; // Check and retrieve planId
         List<String> times = extractTimes(originalPlanData);
         for (String time : times) {
             Map<String, Object> planCopy = new HashMap<>(originalPlanData);
             planCopy.put("displayTime", time);
             planCopy.put("isTaken", false); // Assume false initially
+            planCopy.put("planId", planId); // Store the planId in each plan instance
 
             // Log to debug the values being processed
-            Log.d("expandPlanData", "Processing plan: Name=" + planCopy.get("name") + ", Time=" + time);
+            Log.d("expandPlanData", "Processing plan: Name=" + planCopy.get("name") + ", Time=" + time + ", Plan ID=" + planId);
 
             todayPlans.add(planCopy);
         }
@@ -253,13 +250,24 @@ public class Today extends AppCompatActivity {
             String name = (String) plan.get("name");
             String time = (String) plan.get("displayTime");
             Boolean isTaken = (Boolean) plan.get("isTaken");
+            String planId = (String) plan.get("planId"); // Ensure the planId is retrieved here
 
             tvPlanName.setText(name);
             tvPlanTime.setText(time);
             redSquareButton.setEnabled(!isTaken);
 
+            redSquareButton.setOnClickListener(v -> {
+                if (!isTaken && planId != null && !planId.isEmpty()) {  // Check planId validity before showing options
+                    showPlanOptions(plan, name, time);
+                } else {
+                    Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
+                }
+            });
+
             return convertView;
         }
+
+
 
 
         private String extractTimesFormatted(Map<String, Object> planData) {
@@ -310,13 +318,16 @@ public class Today extends AppCompatActivity {
                 Log.e("Today", "Failed to parse time", e);
                 return time;  // Return original time if parsing fails
             }
-        }
+
+    }
 
         private void showPlanOptions(Map<String, Object> planData, String planName, String time) {
             String planId = (String) planData.get("planId"); // Retrieve the plan ID set earlier
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Plan Options");
             builder.setMessage("Select an action for this plan.");
+
+            // "Mark as Taken" button
             builder.setPositiveButton("Mark as Taken", (dialog, which) -> {
                 if (planId != null && !planId.isEmpty()) {
                     updateMarkAsTaken(planId, planName, time, "Yes");
@@ -324,6 +335,8 @@ public class Today extends AppCompatActivity {
                     Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
                 }
             });
+
+            // "Mark as Not Taken" button
             builder.setNegativeButton("No", (dialog, which) -> {
                 if (planId != null && !planId.isEmpty()) {
                     updateMarkAsTaken(planId, planName, time, "No");
@@ -331,10 +344,14 @@ public class Today extends AppCompatActivity {
                     Toast.makeText(getContext(), "Error: Plan ID is missing or invalid", Toast.LENGTH_LONG).show();
                 }
             });
+
+            // Cancel button
             builder.setNeutralButton("Cancel", (dialog, which) -> dialog.dismiss());
+
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+
 
 
         private void updateMarkAsTaken(String planId, String planName, String time, String taken) {
