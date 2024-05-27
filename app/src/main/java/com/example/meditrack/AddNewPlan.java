@@ -1,5 +1,6 @@
 package com.example.meditrack;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -839,263 +840,161 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
             }
         });
 
-        findViewById(R.id.mondayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Monday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
+      findViewById(R.id.mondayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Monday");
+        }
+      });
 
-        findViewById(R.id.tuesdayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Tuesday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
+      findViewById(R.id.tuesdayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Tuesday");
+        }
+      });
 
-        findViewById(R.id.wednesdayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Wednesday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
+      findViewById(R.id.wednesdayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Wednesday");
+        }
+      });
+      findViewById(R.id.thursdayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Thursday");
+        }
+      });
+      findViewById(R.id.fridayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Friday");
+        }
+      });
 
-        findViewById(R.id.thursdayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Thursday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
+      findViewById(R.id.saturdayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Saturday");
+        }
+      });
+      findViewById(R.id.sundayButton).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          toggleButtonState(v, "Sunday");
+        }
+      });
 
-        findViewById(R.id.fridayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Friday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
-
-        findViewById(R.id.saturdayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Saturday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
-
-        findViewById(R.id.sundayButton).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recordDay("Sunday");
-                Button button = (Button) v;
-                button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
-            }
-        });
 
 
         // Initialize Firebase Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        addReminderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get values from views
-                String name = nameEditText.getText().toString();
-                String unit = unitSpinner.getSelectedItem().toString();
-                int dosage = Integer.parseInt(dosageEditText.getText().toString());
+      addReminderButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          String name = nameEditText.getText().toString().trim();
+          String unit = unitSpinner.getSelectedItem().toString();
+          String dosageStr = dosageEditText.getText().toString().trim();
+          String startDate = ((TextView) startDateSpinner.getSelectedView()).getText().toString();
+          String endDate = ((TextView) endDateSpinner.getSelectedView()).getText().toString();
+          String comment = commentEditText.getText().toString().trim();
+          String intakeMethod = inTimeSpinner.getSelectedItem().toString();
 
-                // Get selected start date and end date strings
-                String selectedStartDate = startDateSpinner.getSelectedItem().toString();
-                String selectedEndDate = endDateSpinner.getSelectedItem().toString();
+          // Validate inputs
+          List<String> errors = new ArrayList<>();
+          if (name.isEmpty()) errors.add("Plan Name");
+          if (unit.equals("Select Unit")) errors.add("Unit");
+          if (dosageStr.isEmpty()) errors.add("Dosage");
+          if (startDate.equals("Start Date")) errors.add("Start Date");
+          if (endDate.equals("End Date")) errors.add("End Date");
+          if (intakeMethod.equals("Select Intake Method")) errors.add("Intake Method");
+          if (selectedDays.isEmpty() && intakeMethod.equals("Specific day of the week")) errors.add("At least one day of the week");
+          if (!errors.isEmpty()) {
+            String errorText = "Please fill up the following: " + TextUtils.join(", ", errors);
+            Toast.makeText(AddNewPlan.this, errorText, Toast.LENGTH_LONG).show();
+            return;
+          }
 
-                // Convert start date and end date strings to Date objects
-                Date startDateValue = null;
-                Date endDateValue = null;
+          int dosage = Integer.parseInt(dosageStr);
+          SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+          Date startDateValue = null, endDateValue = null;
 
-                // Initialize calendar instance
-                Calendar calendar = Calendar.getInstance();
+          try {
+            startDateValue = sdf.parse(startDate);
+            endDateValue = sdf.parse(endDate);
+          } catch (ParseException e) {
+            Toast.makeText(AddNewPlan.this, "Invalid date format.", Toast.LENGTH_SHORT).show();
+            return;
+          }
 
-                // Convert start date string to Date based on selection
-                if (selectedStartDate.equals("Today")) {
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("Tomorrow")) {
-                    calendar.add(Calendar.DATE, 1);
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("In One Week")) {
-                    calendar.add(Calendar.DATE, 7);
-                    startDateValue = calendar.getTime();
-                } else if (selectedStartDate.equals("Select Date")) {
-                    // Handle the case of selecting a specific date from DatePickerDialog
-                    String startDate = ((TextView) startDateSpinner.getSelectedView()).getText().toString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    try {
-                        startDateValue = sdf.parse(startDate);
-                    } catch (java.text.ParseException e) {
-                        e.printStackTrace();
-                    }
+          Map<String, Object> plan = new HashMap<>();
+          plan.put("name", name);
+          plan.put("unit", unit);
+          plan.put("dosage", dosage);
+          plan.put("startDate", startDateValue);
+          plan.put("endDate", endDateValue);
+          plan.put("userId", FirebaseAuth.getInstance().getCurrentUser().getUid());
+          plan.put("imageURL", imageUrl);
+          plan.put("comment", comment);
+          plan.put("Intake_method", intakeMethod);
+
+          addIntakeSpecificDetails(plan, intakeMethod);
+
+          db.collection("plans").add(plan)
+            .addOnSuccessListener(documentReference -> {
+              Toast.makeText(AddNewPlan.this, "Plan added successfully.", Toast.LENGTH_SHORT).show();
+              startActivity(new Intent(AddNewPlan.this, Plans.class));
+              finish();
+            })
+            .addOnFailureListener(e -> {
+              Log.e("AddPlanError", "Error saving plan", e);
+              Toast.makeText(AddNewPlan.this, "Error adding plan.", Toast.LENGTH_SHORT).show();
+            });
+        }
+
+        private void addIntakeSpecificDetails(Map<String, Object> plan, String method) {
+          switch (method) {
+            case "Every X hours":
+              List<String> nextOccurrences = calculateNextOccurrences(hourNumber);
+              plan.put("nextOccurrences", nextOccurrences);
+              break;
+            case "Morning":
+            case "Before Sleep":
+              String presetTime = method.equals("Morning") ? "8:00 AM" : "8:00 PM";
+              plan.put("time", presetTime);
+              break;
+            case "In time":
+            case "Specific day of the week":
+              // For both "In time" and "Specific day of the week", capture all time inputs.
+              EditText timeEditText = findViewById(R.id.timeEditText);
+              String timeValue = timeEditText.getText().toString().trim();
+              if (!timeValue.isEmpty()) {
+                plan.put("time", timeValue);
+              }
+
+              // Add more time values from additional time fields
+              for (int i = 2; i <= 5; i++) {
+                EditText additionalTimeEditText = findViewById(getResources().getIdentifier("timeEditText" + i, "id", getPackageName()));
+                String additionalTimeValue = additionalTimeEditText.getText().toString().trim();
+                if (!additionalTimeValue.isEmpty()) {
+                  plan.put("time" + i, additionalTimeValue);
                 }
+              }
 
-                // Convert end date string to Date based on selection
-                if (selectedEndDate.equals("In One Week")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.DATE, 7);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("In One Month")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.MONTH, 1);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("Constantly")) {
-                    calendar.setTime(startDateValue);
-                    calendar.add(Calendar.YEAR, 1);
-                    endDateValue = calendar.getTime();
-                } else if (selectedEndDate.equals("Select Date")) {
-                    // Handle the case of selecting a specific date from DatePickerDialog
-                    String endDate = ((TextView) endDateSpinner.getSelectedView()).getText().toString();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    try {
-                        endDateValue = sdf.parse(endDate);
-                    } catch (java.text.ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
+              if (method.equals("Specific day of the week")) {
+                plan.put("selectedDays", selectedDays);
+              }
+              break;
+            default:
+              break;
+          }
+        }
+      });
 
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                if (currentUser != null) {
-                    String userId = currentUser.getUid(); // Retrieve the user's ID
-                    String intakeMethod = inTimeSpinner.getSelectedItem().toString();
-
-                    // Create a map to hold the data
-                    Map<String, Object> plan = new HashMap<>();
-                    plan.put("imageURL", imageUrl);
-                    plan.put("name", name);
-                    plan.put("unit", unit);
-                    plan.put("dosage", dosage);
-                    plan.put("startDate", startDateValue);
-                    plan.put("endDate", endDateValue);
-                    plan.put("userId", userId); // Add the user's ID as a field
-                    plan.put("Intake_method", intakeMethod); // Add the intake method
-
-                    // Check the selection in the spinner
-                    String selectedItem = inTimeSpinner.getSelectedItem().toString();
-                    if (selectedItem.equals("Morning") || selectedItem.equals("Before Sleep")) {
-                        // Set fixed time for morning and before sleep
-                        String time = (selectedItem.equals("Morning")) ? "8:00 AM" : "8:00 PM";
-                        plan.put("time", time);
-
-                        // Check if there's a comment and add it to the plan data
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            plan.put("comment", comment);
-                        }
-                    } else if (selectedItem.equals("Every X hours")) {
-                        // Get the selected interval for the hours
-                        int intervalHours = hourNumber; // Make sure hourNumber is properly defined and accessible
-
-                        // Calculate the next occurrences within a 24-hour period
-                        List<String> nextOccurrences = calculateNextOccurrences(intervalHours);
-
-                        // Add the next occurrences to the plan data
-                        plan.put("nextOccurrences", nextOccurrences);
-
-                        // Check if there's a comment and add it to the plan data
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            plan.put("comment", comment);
-                        }
-                    } else if (selectedItem.equals("Specific day of the week")) {
-                        // Check if any day is selected
-                        if (!selectedDays.isEmpty()) {
-                            // Add selected day(s) to the plan data
-                            plan.put("selectedDays", selectedDays);
-                            // Get the time value from the timeEditText field
-                            String timeValue = timeEditText.getText().toString();
-                            // Check if the time field is not empty
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                // Add the time value to the plan data
-                                plan.put("time", timeValue);
-                            }
-
-                            // Check additional time fields for time input
-                            for (int i = 2; i <= 5; i++) {
-                                EditText editText = findViewById(getResources().getIdentifier("timeEditText" + i, "id", getPackageName()));
-                                String additionalTimeValue = editText.getText().toString();
-                                if (!TextUtils.isEmpty(additionalTimeValue)) {
-                                    plan.put("time" + i, additionalTimeValue);
-                                }
-                            }
-
-                            // Check if any comment is provided
-                            String comment = commentEditText.getText().toString();
-                            if (!TextUtils.isEmpty(comment)) {
-                                // Add the comment to the plan data
-                                plan.put("comment", comment);
-                            }
-                        } else {
-                            // Show a message to the user that at least one day should be selected
-                            Toast.makeText(AddNewPlan.this, "Please select at least one day", Toast.LENGTH_SHORT).show();
-                            return; // Exit the method without adding the plan to Firestore
-                        }
-                    } else {
-                        // For other cases, check if "In time" is selected
-                        if (selectedItem.equals("In time")) {
-                            // Get the time value from the timeEditText field
-                            String timeValue = timeEditText.getText().toString();
-                            // Check if the time field is not empty
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                // Add the time value to the plan data
-                                plan.put("time", timeValue);
-                            }
-                        }
-
-                        // Check additional time fields for time input
-                        for (int i = 2; i <= 5; i++) {
-                            EditText editText = findViewById(getResources().getIdentifier("timeEditText" + i, "id", getPackageName()));
-                            String timeValue = editText.getText().toString();
-                            if (!TextUtils.isEmpty(timeValue)) {
-                                plan.put("time" + i, timeValue);
-                            }
-                        }
-
-                        // Check if any comment is provided
-                        String comment = commentEditText.getText().toString();
-                        if (!TextUtils.isEmpty(comment)) {
-                            // Add the comment to the plan data
-                            plan.put("comment", comment);
-                        }
-                    }
-
-                    // Add the data to Firebase Firestore
-                    db.collection("plans").add(plan)
-                            .addOnSuccessListener(documentReference -> {
-                                Toast.makeText(AddNewPlan.this, "Plan added successfully", Toast.LENGTH_SHORT).show();
-
-                                // Open Plans activity
-                                Intent intent = new Intent(AddNewPlan.this, Plans.class);
-                                startActivity(intent);
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(AddNewPlan.this, "Error adding plan", Toast.LENGTH_SHORT).show();
-                            });
-                } else {
-                    // Handle the case where the user is not authenticated
-                    // For example, you could redirect the user to the login screen
-                }
-            }
-        });
-
-        pillsIconImageView.setOnClickListener(new View.OnClickListener() {
+      pillsIconImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (pillsIconImageView.getDrawable() != null) { // Check if an image is set
@@ -1119,7 +1018,26 @@ public class AddNewPlan extends AppCompatActivity implements ImageChoiceDialogFr
 
     }
 
-    private void updateHourNumberDisplay() {
+  private void toggleButtonState(View v, String day) {
+    Button button = (Button) v;
+
+    // Use tags to track button state
+    Object tag = button.getTag();
+    boolean isSelected = tag != null && (Boolean) tag;
+
+    if (isSelected) {
+      button.setBackgroundResource(R.drawable.circle_white_background);
+      button.setTag(false);
+      selectedDays.remove(day); // Remove day if deselected
+    } else {
+      button.setBackgroundColor(getResources().getColor(R.color.clicked_button_color));
+      button.setTag(true);
+      selectedDays.add(day); // Add day if selected
+    }
+  }
+
+
+  private void updateHourNumberDisplay() {
         TextView hourNumberTextView = findViewById(R.id.hourNumber);
         hourNumberTextView.setText(String.valueOf(hourNumber));
 
