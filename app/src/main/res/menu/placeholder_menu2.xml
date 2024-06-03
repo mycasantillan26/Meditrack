@@ -1,0 +1,17 @@
+<!-- res/menu/placeholder_menu.xml -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <!-- Menu items (example) -->
+  <item
+    android:id="@+id/logoutButton"
+    android:title="Log out" />
+  <item
+    android:id="@+id/action_search"
+    android:icon="@android:drawable/ic_menu_search"
+    android:title="Search"
+    app:showAsAction="always"
+    app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+</menu>
